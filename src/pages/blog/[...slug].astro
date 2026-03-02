@@ -34,17 +34,19 @@ function formatDate(dateStr: string) {
 		<!-- Header / Nav -->
 		<header class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-slate-200 dark:border-slate-800 justify-between">
 			<div class="flex items-center gap-4">
-				<a class="text-slate-900 dark:text-slate-100 flex items-center justify-center hover:text-primary transition-colors" href="/">
+				<a class="text-slate-900 dark:text-slate-100 flex items-center justify-center hover:text-primary transition-colors cursor-pointer" href="/">
 					<span class="material-symbols-outlined">arrow_back</span>
 				</a>
 				<h2 class="text-lg font-bold leading-tight tracking-tight text-slate-900 dark:text-white">Article</h2>
 			</div>
 			<div class="flex gap-4">
-				<button class="flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">
+				<button id="btn-share" class="flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary transition-colors cursor-pointer group relative">
 					<span class="material-symbols-outlined">share</span>
+					<span class="absolute -bottom-8 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">공유하기</span>
 				</button>
-				<button class="flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">
+				<button id="btn-bookmark" class="flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary transition-colors cursor-pointer group relative">
 					<span class="material-symbols-outlined">bookmark</span>
+					<span class="absolute -bottom-8 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">저장하기</span>
 				</button>
 			</div>
 		</header>
@@ -63,12 +65,11 @@ function formatDate(dateStr: string) {
 						<p class="text-sm text-slate-500 dark:text-slate-400">Published {formatDate(entry.data.pubDate)} · 3 min read</p>
 					</div>
 					<div class="ml-auto">
-						<button class="bg-primary hover:bg-primary/90 transition-colors text-white px-4 py-1.5 rounded-full text-sm font-semibold">Follow</button>
+						<button class="bg-primary hover:bg-primary/90 transition-colors text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">Follow</button>
 					</div>
 				</div>
 
 				<!-- Article Body -->
-				<!-- Enhanced prose styles for dark mode and Stitch-like appearance -->
 				<div class="prose prose-slate dark:prose-invert max-w-none space-y-6 text-lg leading-relaxed text-slate-700 dark:text-slate-300
 					prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white
 					prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
@@ -86,10 +87,10 @@ function formatDate(dateStr: string) {
 				<div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-4 items-center">
 					<span class="text-sm font-bold uppercase tracking-wider text-slate-500">Share this story</span>
 					<div class="flex gap-2">
-						<button class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors">
+						<button id="btn-share-bottom" class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors cursor-pointer">
 							<span class="material-symbols-outlined text-[20px]">share</span>
 						</button>
-						<button class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors">
+						<button id="btn-copy-link" class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors cursor-pointer relative">
 							<span class="material-symbols-outlined text-[20px]">link</span>
 						</button>
 					</div>
@@ -103,7 +104,7 @@ function formatDate(dateStr: string) {
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 					{relatedPosts.map(post => (
 					<a class="group flex flex-col gap-3" href={`/blog/${post.slug}`}>
-						<div class="aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800">
+						<div class="aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800 hover:shadow-md transition-shadow">
 							<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-300" data-alt={post.data.title} style={`background-image: url("${extractImageUrl(post.body)}");`}></div>
 						</div>
 						<div>
@@ -119,23 +120,71 @@ function formatDate(dateStr: string) {
 		</main>
 
 		<!-- Bottom Navigation -->
-		<nav class="sticky bottom-0 z-50 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-4 pb-4 pt-2">
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="/">
+		<nav class="sticky bottom-0 z-50 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-4 pb-4 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-transform cursor-pointer hover:scale-105" href="/">
 				<span class="material-symbols-outlined hover:fill-[1]">home</span>
 				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Home</p>
 			</a>
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
-				<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">explore</span>
-				<p class="text-[10px] font-bold leading-normal uppercase tracking-wider">Discover</p>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-transform cursor-pointer hover:scale-105" href="/">
+				<span class="material-symbols-outlined">search</span>
+				<p class="text-[10px] font-bold leading-normal uppercase tracking-wider">Search</p>
 			</a>
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
-				<span class="material-symbols-outlined">auto_awesome</span>
-				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Trends</p>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-transform cursor-pointer hover:scale-105" href="https://github.com/sarada0909/my-ai-blog" target="_blank">
+				<span class="material-symbols-outlined">code</span>
+				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Source</p>
 			</a>
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
-				<span class="material-symbols-outlined">person</span>
-				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Profile</p>
-			</a>
+			<button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-transform cursor-pointer hover:scale-105">
+				<span class="material-symbols-outlined">keyboard_arrow_up</span>
+				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Top</p>
+			</button>
 		</nav>
 	</div>
+
+	<!-- Client-side Interactive Script -->
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			// Sharing logic
+			const shareAction = async () => {
+				const shareData = {
+					title: document.title,
+					text: 'AI Insights에서 이 뉴스 기사를 확인해보세요!',
+					url: window.location.href,
+				};
+				if (navigator.share) {
+					try {
+						await navigator.share(shareData);
+					} catch (err) {
+						console.log('Error sharing:', err);
+					}
+				} else {
+					navigator.clipboard.writeText(window.location.href);
+					alert('링크가 복사되었습니다!');
+				}
+			};
+
+			document.getElementById('btn-share')?.addEventListener('click', shareAction);
+			document.getElementById('btn-share-bottom')?.addEventListener('click', shareAction);
+
+			// Copy link logic
+			document.getElementById('btn-copy-link')?.addEventListener('click', () => {
+				navigator.clipboard.writeText(window.location.href);
+				alert('링크가 복사되었습니다!');
+			});
+
+			// Bookmark logic
+			document.getElementById('btn-bookmark')?.addEventListener('click', (e) => {
+				const icon = (e.currentTarget as HTMLElement).querySelector('.material-symbols-outlined');
+				if (icon) {
+					if (icon.textContent === 'bookmark') {
+						icon.textContent = 'bookmark_added';
+						icon.classList.add('text-primary');
+						alert('기사가 보관함에 저장되었습니다.');
+					} else {
+						icon.textContent = 'bookmark';
+						icon.classList.remove('text-primary');
+					}
+				}
+			});
+		});
+	</script>
 </Layout>

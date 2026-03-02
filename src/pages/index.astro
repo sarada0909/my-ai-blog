@@ -25,13 +25,13 @@ function formatDate(dateStr: string) {
 	<!-- Header -->
 	<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
 		<div class="flex items-center p-4 justify-between max-w-2xl mx-auto w-full">
-			<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-				<span class="material-symbols-outlined">menu</span>
-			</div>
+			<a href="/" class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+				<span class="material-symbols-outlined">auto_awesome</span>
+			</a>
 			<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">AI Insights</h1>
 			<div class="flex w-10 items-center justify-end">
-				<button class="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800">
-					<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">account_circle</span>
+				<button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors cursor-pointer text-slate-600 dark:text-slate-300">
+					<span class="material-symbols-outlined">arrow_upward</span>
 				</button>
 			</div>
 		</div>
@@ -42,20 +42,20 @@ function formatDate(dateStr: string) {
 		<div class="px-4 py-4">
 			<label class="relative flex items-center w-full">
 				<span class="material-symbols-outlined absolute left-4 text-slate-400">search</span>
-				<input class="w-full h-12 pl-12 pr-4 rounded-xl border-none bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary" placeholder="Search AI breakthroughs..." value=""/>
+				<input id="search-input" type="text" class="w-full h-12 pl-12 pr-4 rounded-xl border-none bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary outline-none transition-shadow" placeholder="Search AI breakthroughs..." />
 			</label>
 		</div>
 
 		<!-- Featured News Card -->
 		{featuredPost && (
-		<div class="px-4 @container">
-			<a href={`/blog/${featuredPost.slug}`} class="group relative flex flex-col overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+		<div class="px-4 @container" id="featured-post">
+			<a href={`/blog/${featuredPost.slug}`} class="group relative flex flex-col overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
 				<div class="w-full aspect-video bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt={featuredPost.data.title} style={`background-image: url("${extractImageUrl(featuredPost.body)}");`}>
 				</div>
 				<div class="flex flex-col p-5 gap-3 relative bg-slate-100 dark:bg-slate-800 z-10">
 					<div class="flex items-center gap-2">
-						<span class="px-2 py-0.5 rounded bg-primary text-[10px] font-bold text-white uppercase tracking-wider">Trending</span>
-						<span class="text-xs text-slate-500 dark:text-slate-400">5 min read</span>
+						<span class="px-2 py-0.5 rounded bg-primary text-[10px] font-bold text-white uppercase tracking-wider">Latest</span>
+						<span class="text-xs text-slate-500 dark:text-slate-400">Today</span>
 					</div>
 					<h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors">
 						{featuredPost.data.title}
@@ -67,9 +67,9 @@ function formatDate(dateStr: string) {
 					)}
 					<div class="flex items-center justify-between mt-2">
 						<span class="text-xs font-medium text-slate-500">{formatDate(featuredPost.data.pubDate)}</span>
-						<button class="flex items-center justify-center rounded-lg h-9 px-5 bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors pointer-events-none">
+						<span class="flex items-center justify-center rounded-lg h-9 px-5 bg-primary text-white text-sm font-semibold group-hover:bg-primary/90 transition-colors">
 							Read More
-						</button>
+						</span>
 					</div>
 				</div>
 			</a>
@@ -77,7 +77,7 @@ function formatDate(dateStr: string) {
 		)}
 
 		<!-- Recent Articles Section -->
-		<div class="px-4 pt-8 pb-4">
+		<div class="px-4 pt-8 pb-4" id="recent-header">
 			<h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
 				<span class="material-symbols-outlined text-primary">bolt</span>
 				Recent Articles
@@ -85,45 +85,103 @@ function formatDate(dateStr: string) {
 		</div>
 
 		<!-- Article List -->
-		<div class="flex flex-col gap-4 px-4">
+		<div class="flex flex-col gap-4 px-4" id="article-list">
 			{recentPosts.map((post) => (
-				<a href={`/blog/${post.slug}`} class="flex gap-4 p-3 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-colors group">
+				<a href={`/blog/${post.slug}`} class="article-card flex gap-4 p-3 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-colors group shadow-sm hover:shadow-md">
 					<div class="size-24 shrink-0 rounded-lg bg-cover bg-center overflow-hidden" data-alt={post.data.title} style={`background-image: url("${extractImageUrl(post.body)}");`}>
 					</div>
 					<div class="flex flex-col justify-between py-0.5 flex-1 min-w-0">
 						<div>
-							<h4 class="font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-primary transition-colors">{post.data.title}</h4>
+							<h4 class="article-title font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-primary transition-colors">{post.data.title}</h4>
 							{post.data.description && <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{post.data.description}</p>}
 						</div>
 						<div class="flex items-center text-[11px] text-slate-400 gap-3">
 							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> {formatDate(post.data.pubDate)}</span>
-							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">chat_bubble</span> {Math.floor(Math.random() * 20) + 1}</span>
+							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">visibility</span> {Math.floor(Math.random() * 80) + 12}</span>
 						</div>
 					</div>
 				</a>
 			))}
+			<!-- No Results Message -->
+			<div id="no-results" class="hidden text-center py-10 text-slate-500 dark:text-slate-400">
+				<span class="material-symbols-outlined text-4xl mb-2 opacity-50">search_off</span>
+				<p>검색 결과가 없습니다.</p>
+			</div>
 		</div>
 	</main>
 
 	<!-- Bottom Navigation -->
-	<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+	<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
 		<div class="flex gap-2 px-4 pb-6 pt-3 max-w-2xl mx-auto">
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="/">
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary cursor-pointer hover:scale-105 transition-transform" href="/">
 				<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">home</span>
 				<p class="text-[10px] font-bold uppercase tracking-wider">Home</p>
 			</a>
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
-				<span class="material-symbols-outlined">grid_view</span>
-				<p class="text-[10px] font-bold uppercase tracking-wider">Categories</p>
+			<button id="nav-search-btn" class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-all cursor-pointer hover:scale-105">
+				<span class="material-symbols-outlined">search</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">Search</p>
+			</button>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-all cursor-pointer hover:scale-105" href="https://github.com/sarada0909/my-ai-blog" target="_blank">
+				<span class="material-symbols-outlined">code</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">Source</p>
 			</a>
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
-				<span class="material-symbols-outlined">bookmark</span>
-				<p class="text-[10px] font-bold uppercase tracking-wider">Saved</p>
-			</a>
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
-				<span class="material-symbols-outlined">notifications</span>
-				<p class="text-[10px] font-bold uppercase tracking-wider">Alerts</p>
-			</a>
+			<button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-all cursor-pointer hover:scale-105">
+				<span class="material-symbols-outlined">keyboard_arrow_up</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">Top</p>
+			</button>
 		</div>
 	</nav>
+
+	<!-- Client-side Search Script -->
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const searchInput = document.getElementById('search-input') as HTMLInputElement;
+			const navSearchBtn = document.getElementById('nav-search-btn');
+			const articleCards = document.querySelectorAll('.article-card');
+			const featuredPost = document.getElementById('featured-post');
+			const recentHeader = document.getElementById('recent-header');
+			const noResults = document.getElementById('no-results');
+
+			// Nav Search Button Click -> Focus Input
+			navSearchBtn?.addEventListener('click', () => {
+				window.scrollTo({top: 0, behavior: 'smooth'});
+				setTimeout(() => searchInput?.focus(), 300);
+			});
+
+			// Real-time Search Filtering
+			searchInput?.addEventListener('input', (e) => {
+				const term = (e.target as HTMLInputElement).value.toLowerCase();
+				let visibleCount = 0;
+
+				// Hide featured hero if searching
+				if (term.length > 0) {
+					if (featuredPost) featuredPost.style.display = 'none';
+					if (recentHeader) recentHeader.style.display = 'none';
+				} else {
+					if (featuredPost) featuredPost.style.display = 'block';
+					if (recentHeader) recentHeader.style.display = 'block';
+				}
+
+				// Filter list
+				articleCards.forEach((card) => {
+					const titleEl = card.querySelector('.article-title');
+					const text = titleEl?.textContent?.toLowerCase() || '';
+					
+					if (text.includes(term)) {
+						(card as HTMLElement).style.display = 'flex';
+						visibleCount++;
+					} else {
+						(card as HTMLElement).style.display = 'none';
+					}
+				});
+
+				// Show 'No results' message
+				if (visibleCount === 0 && term.length > 0) {
+					if (noResults) noResults.style.display = 'block';
+				} else {
+					if (noResults) noResults.style.display = 'none';
+				}
+			});
+		});
+	</script>
 </Layout>
