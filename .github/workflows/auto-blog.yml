@@ -1,0 +1,45 @@
+name: Daily AI News Bot
+
+on:
+  schedule:
+    # 매일 아침 8시(KST)에 실행 (UTC 기준 23:00)
+    - cron: '0 23 * * *'
+  workflow_dispatch: # GitHub 웹사이트에서 수동으로 버튼을 눌러 실행할 수 있게 함
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # 봇이 새 글을 작성하고 푸시할 수 있는 권한
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run AI News Bot
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python auto_poster.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content/blog/*.md
+          
+          # 새로운 파일이 있을 때만 커밋
+          git status --porcelain | grep . && git commit -m "🤖 AI: 오늘의 뉴스 포스팅 자동 업로드" && git push || echo "새로운 뉴스가 없어 커밋을 건너뜁니다."
