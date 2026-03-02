@@ -55,18 +55,11 @@ function formatDate(dateStr: string) {
 		<main class="flex-1 max-w-4xl mx-auto w-full">
 			<article class="px-4 py-8">
 				<!-- Title & Meta -->
-				<h1 class="text-slate-900 dark:text-slate-100 text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-6">
+				<h1 class="text-slate-900 dark:text-slate-100 text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-6 mt-4">
 					{entry.data.title}
 				</h1>
-				<div class="flex items-center gap-4 mb-8 border-b border-slate-200 dark:border-slate-800 pb-8">
-					<div class="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-800 bg-cover bg-center shrink-0" style='background-image: url("https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=150&auto=format&fit=crop");'></div>
-					<div class="flex flex-col">
-						<p class="font-bold text-slate-900 dark:text-slate-100 leading-tight">AI Bot</p>
-						<p class="text-sm text-slate-500 dark:text-slate-400">Published {formatDate(entry.data.pubDate)} · 3 min read</p>
-					</div>
-					<div class="ml-auto">
-						<button class="bg-primary hover:bg-primary/90 transition-colors text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">Follow</button>
-					</div>
+				<div class="flex items-center gap-4 mb-8 border-b border-slate-200 dark:border-slate-800 pb-4">
+					<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Published {formatDate(entry.data.pubDate)}</p>
 				</div>
 
 				<!-- Article Body -->
