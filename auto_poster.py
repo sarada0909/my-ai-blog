@@ -66,8 +66,15 @@ def generate_blog_post(news_item):
     print(f"Generating blog post for: {safe_title}...")
     
     text = f"Title: {news_item['title']}\nSource: {news_item['source']}\nSummary: {news_item['summary']}\nLink: {news_item['link']}\nImage URL: {news_item.get('image', '')}"
-    # Strip some HTML tags roughly
-    text = re.sub('<[^<]+?>', '', text) 
+    
+    # Extract YouTube links before stripping HTML
+    yt_links = re.findall(r'(https?://(?:www\.)?youtube\.com/watch\?v=[\w-]+|https?://youtu\.be/[\w-]+|https?://(?:www\.)?youtube\.com/embed/[\w-]+)', text)
+    unique_yt = list(set(yt_links))
+    yt_text = "\nYouTube Links: " + ", ".join(unique_yt) if unique_yt else ""
+    
+    # Strip some HTML tags roughly but use space instead of empty to keep words separated
+    text = re.sub('<[^<]+?>', ' ', text) 
+    text += yt_text
     
     prompt = f"""
     You are a professional AI news blogger. Based on the following news article, write an engaging and informative news blog post in Korean.
@@ -77,13 +84,14 @@ def generate_blog_post(news_item):
     2. Provide a catchy, click-worthy Korean title for the blog post on the VERY FIRST line. Do not use Markdown heading `#` for the title.
     3. Use appropriate emojis (🚀, 💡, 🌐, 📢, etc.) throughout the headings, bullet points, and text to make the post feel trendy and engaging.
     4. Right under the title, you MUST provide a "## 3줄 요약" section with exactly three bullet points summarizing the entire article. DO NOT write "TL;DR".
-    5. Cover Image: right after the 3줄 요약 section, if an "Image URL" is provided in the News Item below, include it as a Markdown image: `![기사 관련 이미지](the_provided_image_url)`. If NO image URL is provided, formulate a short English image prompt based on the article's topic, replace spaces with `%20`, and use this format: `![AI 이미지](https://image.pollinations.ai/prompt/YOUR_PROMPT_HERE?width=800&height=400&nologo=true)`.
+    5. Cover Image: right after the 3줄 요약 section, if an "Image URL" is provided in the News Item below, include it as a Markdown image: `![기사 관련 이미지](the_provided_image_url)`. If NO image URL is provided, DO NOT include any image in this post.
     6. You MUST use Markdown headings (`##`, `###`) to structure the rest of the body into logical sections.
     7. Heavy structure: Avoid long paragraphs. Break almost everything down into bullet points (`*` or `-`).
     8. Highlight key terms: You MUST bold (`**text**`) important keywords, names, numbers, and concepts so the reader can easily scan the document.
     9. You MUST use generous line breaks (empty lines) between sections and lists.
     10. The tone should be professional, objective, and clear.
-    11. At the very end of the post, you MUST include a "출처" (Source) section separated by a horizontal rule (`---`), formatted exactly like this:
+    11. YouTube Videos: If any "YouTube Links" are provided in the News Item below, you MUST embed them prominently in the post using this format: `[▶️ 관련 유튜브 영상 보기](YOUTUBE_LINK_HERE)`.
+    12. At the very end of the post, you MUST include a "출처" (Source) section separated by a horizontal rule (`---`), formatted exactly like this:
        
        ---
        ### 출처
