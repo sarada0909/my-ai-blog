@@ -103,7 +103,7 @@ const imageUrl = extractImageUrl(entry.body);
 					{relatedPosts.map(post => (
 					<a class="group flex flex-col gap-3" href={`/blog/${post.slug}`}>
 						<div class="aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800 hover:shadow-md transition-shadow">
-							<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-300" data-alt={post.data.title} style={`background-image: url("${extractImageUrl(post.body)}");`}></div>
+							<img src={extractImageUrl(post.body)} alt={post.data.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 						</div>
 						<div>
 							<span class="text-xs font-bold text-primary uppercase">News</span>

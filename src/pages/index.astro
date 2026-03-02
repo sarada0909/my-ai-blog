@@ -50,7 +50,8 @@ function formatDate(dateStr: string) {
 		{featuredPost && (
 		<div class="px-4 @container" id="featured-post">
 			<a href={`/blog/${featuredPost.slug}`} class="group relative flex flex-col overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-				<div class="w-full aspect-video bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt={featuredPost.data.title} style={`background-image: url("${extractImageUrl(featuredPost.body)}");`}>
+				<div class="w-full aspect-video overflow-hidden">
+					<img src={extractImageUrl(featuredPost.body)} alt={featuredPost.data.title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
 				</div>
 				<div class="flex flex-col p-5 gap-3 relative bg-slate-100 dark:bg-slate-800 z-10">
 					<div class="flex items-center gap-2">
@@ -88,7 +89,8 @@ function formatDate(dateStr: string) {
 		<div class="flex flex-col gap-4 px-4" id="article-list">
 			{recentPosts.map((post) => (
 				<a href={`/blog/${post.slug}`} class="article-card flex gap-4 p-3 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-colors group shadow-sm hover:shadow-md">
-					<div class="size-24 shrink-0 rounded-lg bg-cover bg-center overflow-hidden" data-alt={post.data.title} style={`background-image: url("${extractImageUrl(post.body)}");`}>
+					<div class="size-24 shrink-0 rounded-lg overflow-hidden">
+						<img src={extractImageUrl(post.body)} alt={post.data.title} class="w-full h-full object-cover group-hover:opacity-90 transition-opacity" />
 					</div>
 					<div class="flex flex-col justify-between py-0.5 flex-1 min-w-0">
 						<div>
