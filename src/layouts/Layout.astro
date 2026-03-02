@@ -1,23 +1,34 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
+	<body class="bg-white text-black antialiased font-sans">
+		<header class="border-b border-gray-200 py-6 px-4 mb-8">
+			<div class="max-w-4xl mx-auto">
+				<a href="/" class="text-3xl font-bold tracking-tighter">AI News Daily</a>
+				<p class="text-gray-500 text-sm mt-1">최신 AI 뉴스를 자동으로 전해드립니다.</p>
+			</div>
+		</header>
+		<main class="max-w-4xl mx-auto px-4 min-h-screen">
+			<slot />
+		</main>
+		<footer class="border-t border-gray-200 py-8 mt-16 text-center text-sm text-gray-500">
+			&copy; {new Date().getFullYear()} AI News Daily. All rights reserved.
+		</footer>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

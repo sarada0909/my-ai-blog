@@ -1,11 +1,29 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const posts = await getCollection('blog');
+// Sort by date descending
+posts.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="AI News Daily - 홈">
+	<h1 class="text-2xl font-bold mb-6">최신 뉴스 기사</h1>
+	<ul class="space-y-6">
+		{posts.map((post) => (
+			<li class="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+				<a href={`/blog/${post.slug}`} class="block group">
+					<h2 class="text-xl font-bold group-hover:underline mb-2">{post.data.title}</h2>
+					<time class="text-sm text-gray-500 mb-2 block">
+						{new Date(post.data.pubDate).toLocaleDateString('ko-KR', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric'
+						})}
+					</time>
+					{post.data.description && <p class="text-gray-700 mt-2">{post.data.description}</p>}
+				</a>
+			</li>
+		))}
+	</ul>
 </Layout>
