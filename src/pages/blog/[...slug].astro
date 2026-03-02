@@ -27,8 +27,6 @@ function extractImageUrl(body: string) {
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
----
-
 const imageUrl = extractImageUrl(entry.body);
 ---
 
