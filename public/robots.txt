@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://my-ai-blog-9pe.pages.dev/sitemap-index.xml

@@ -29,7 +29,14 @@ function formatDate(dateStr: string) {
 }
 ---
 
-<Layout title={`${entry.data.title} - AI Insights`}>
+const imageUrl = extractImageUrl(entry.body);
+---
+
+<Layout 
+	title={`${entry.data.title} - AI Insights`}
+	description={entry.data.description || "AI News Bot이 전해드리는 최신 AI 뉴스 요약본입니다."}
+	image={imageUrl}
+>
 	<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
 		<!-- Header / Nav -->
 		<header class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-slate-200 dark:border-slate-800 justify-between">
