@@ -121,10 +121,10 @@ function formatDate(dateStr: string) {
 				<span class="material-symbols-outlined">search</span>
 				<p class="text-[10px] font-bold uppercase tracking-wider">Search</p>
 			</button>
-			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-all cursor-pointer hover:scale-105" href="https://github.com/sarada0909/my-ai-blog" target="_blank">
-				<span class="material-symbols-outlined">code</span>
-				<p class="text-[10px] font-bold uppercase tracking-wider">Source</p>
-			</a>
+			<button id="nav-new-btn" class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-all cursor-pointer hover:scale-105">
+				<span class="material-symbols-outlined">new_releases</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">New</p>
+			</button>
 			<button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-all cursor-pointer hover:scale-105">
 				<span class="material-symbols-outlined">keyboard_arrow_up</span>
 				<p class="text-[10px] font-bold uppercase tracking-wider">Top</p>
@@ -137,6 +137,7 @@ function formatDate(dateStr: string) {
 		document.addEventListener('DOMContentLoaded', () => {
 			const searchInput = document.getElementById('search-input') as HTMLInputElement;
 			const navSearchBtn = document.getElementById('nav-search-btn');
+			const navNewBtn = document.getElementById('nav-new-btn');
 			const articleCards = document.querySelectorAll('.article-card');
 			const featuredPost = document.getElementById('featured-post');
 			const recentHeader = document.getElementById('recent-header');
@@ -146,6 +147,15 @@ function formatDate(dateStr: string) {
 			navSearchBtn?.addEventListener('click', () => {
 				window.scrollTo({top: 0, behavior: 'smooth'});
 				setTimeout(() => searchInput?.focus(), 300);
+			});
+
+			// Nav New Button Click -> Clear Search & Go to Top
+			navNewBtn?.addEventListener('click', () => {
+				if (searchInput) {
+					searchInput.value = '';
+					searchInput.dispatchEvent(new Event('input'));
+				}
+				window.scrollTo({top: 0, behavior: 'smooth'});
 			});
 
 			// Real-time Search Filtering
