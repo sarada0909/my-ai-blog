@@ -12,8 +12,8 @@ const recentPosts = posts.slice(1);
 // Helper to extract first image from markdown body
 function extractImageUrl(body: string) {
   if (!body) return 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop';
-  const match = body.match(/!\[.*?\]\((.*?)\)/);
-  return match ? match[1] : 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop';
+  const match = body.match(/!\[.*?\]\((.+?)\)/);
+  return match ? match[1].trim() : 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop';
 }
 
 function formatDate(dateStr: string) {
