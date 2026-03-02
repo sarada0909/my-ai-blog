@@ -1,2 +1,24 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@theme {
+    --color-primary: #067ff9;
+    --color-background-light: #f5f7f8;
+    --color-background-dark: #0f1923;
+    --font-display: "Inter", sans-serif;
+
+    /* Typography plugin custom styling for dark mode */
+    --typography-body: theme('colors.slate.700');
+    --typography-headings: theme('colors.slate.900');
+    --typography-links: theme('colors.primary');
+    --typography-bold: theme('colors.slate.900');
+
+    --typography-invert-body: theme('colors.slate.300');
+    --typography-invert-headings: theme('colors.white');
+    --typography-invert-links: theme('colors.primary');
+    --typography-invert-bold: theme('colors.white');
+}
+
+body {
+    min-height: max(884px, 100dvh);
+}

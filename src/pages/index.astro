@@ -5,25 +5,125 @@ import { getCollection } from 'astro:content';
 const posts = await getCollection('blog');
 // Sort by date descending
 posts.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+
+const featuredPost = posts.length > 0 ? posts[0] : null;
+const recentPosts = posts.slice(1);
+
+// Helper to extract first image from markdown body
+function extractImageUrl(body: string) {
+  if (!body) return 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop';
+  const match = body.match(/!\[.*?\]\((.*?)\)/);
+  return match ? match[1] : 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop';
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 ---
 
-<Layout title="AI News Daily - 홈">
-	<h1 class="text-2xl font-bold mb-6">최신 뉴스 기사</h1>
-	<ul class="space-y-6">
-		{posts.map((post) => (
-			<li class="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-				<a href={`/blog/${post.slug}`} class="block group">
-					<h2 class="text-xl font-bold group-hover:underline mb-2">{post.data.title}</h2>
-					<time class="text-sm text-gray-500 mb-2 block">
-						{new Date(post.data.pubDate).toLocaleDateString('ko-KR', {
-							year: 'numeric',
-							month: 'long',
-							day: 'numeric'
-						})}
-					</time>
-					{post.data.description && <p class="text-gray-700 mt-2">{post.data.description}</p>}
+<Layout title="AI Insights - Daily Tech Feed">
+	<!-- Header -->
+	<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+		<div class="flex items-center p-4 justify-between max-w-2xl mx-auto w-full">
+			<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+				<span class="material-symbols-outlined">menu</span>
+			</div>
+			<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">AI Insights</h1>
+			<div class="flex w-10 items-center justify-end">
+				<button class="flex size-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800">
+					<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">account_circle</span>
+				</button>
+			</div>
+		</div>
+	</header>
+	
+	<main class="flex-1 max-w-2xl mx-auto w-full pb-24">
+		<!-- Search Bar -->
+		<div class="px-4 py-4">
+			<label class="relative flex items-center w-full">
+				<span class="material-symbols-outlined absolute left-4 text-slate-400">search</span>
+				<input class="w-full h-12 pl-12 pr-4 rounded-xl border-none bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary" placeholder="Search AI breakthroughs..." value=""/>
+			</label>
+		</div>
+
+		<!-- Featured News Card -->
+		{featuredPost && (
+		<div class="px-4 @container">
+			<a href={`/blog/${featuredPost.slug}`} class="group relative flex flex-col overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+				<div class="w-full aspect-video bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt={featuredPost.data.title} style={`background-image: url("${extractImageUrl(featuredPost.body)}");`}>
+				</div>
+				<div class="flex flex-col p-5 gap-3 relative bg-slate-100 dark:bg-slate-800 z-10">
+					<div class="flex items-center gap-2">
+						<span class="px-2 py-0.5 rounded bg-primary text-[10px] font-bold text-white uppercase tracking-wider">Trending</span>
+						<span class="text-xs text-slate-500 dark:text-slate-400">5 min read</span>
+					</div>
+					<h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+						{featuredPost.data.title}
+					</h2>
+					{featuredPost.data.description && (
+						<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-2">
+							{featuredPost.data.description}
+						</p>
+					)}
+					<div class="flex items-center justify-between mt-2">
+						<span class="text-xs font-medium text-slate-500">{formatDate(featuredPost.data.pubDate)}</span>
+						<button class="flex items-center justify-center rounded-lg h-9 px-5 bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors pointer-events-none">
+							Read More
+						</button>
+					</div>
+				</div>
+			</a>
+		</div>
+		)}
+
+		<!-- Recent Articles Section -->
+		<div class="px-4 pt-8 pb-4">
+			<h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+				<span class="material-symbols-outlined text-primary">bolt</span>
+				Recent Articles
+			</h3>
+		</div>
+
+		<!-- Article List -->
+		<div class="flex flex-col gap-4 px-4">
+			{recentPosts.map((post) => (
+				<a href={`/blog/${post.slug}`} class="flex gap-4 p-3 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-primary/50 transition-colors group">
+					<div class="size-24 shrink-0 rounded-lg bg-cover bg-center overflow-hidden" data-alt={post.data.title} style={`background-image: url("${extractImageUrl(post.body)}");`}>
+					</div>
+					<div class="flex flex-col justify-between py-0.5 flex-1 min-w-0">
+						<div>
+							<h4 class="font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-primary transition-colors">{post.data.title}</h4>
+							{post.data.description && <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{post.data.description}</p>}
+						</div>
+						<div class="flex items-center text-[11px] text-slate-400 gap-3">
+							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> {formatDate(post.data.pubDate)}</span>
+							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">chat_bubble</span> {Math.floor(Math.random() * 20) + 1}</span>
+						</div>
+					</div>
 				</a>
-			</li>
-		))}
-	</ul>
+			))}
+		</div>
+	</main>
+
+	<!-- Bottom Navigation -->
+	<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+		<div class="flex gap-2 px-4 pb-6 pt-3 max-w-2xl mx-auto">
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="/">
+				<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">home</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">Home</p>
+			</a>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+				<span class="material-symbols-outlined">grid_view</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">Categories</p>
+			</a>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+				<span class="material-symbols-outlined">bookmark</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">Saved</p>
+			</a>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+				<span class="material-symbols-outlined">notifications</span>
+				<p class="text-[10px] font-bold uppercase tracking-wider">Alerts</p>
+			</a>
+		</div>
+	</nav>
 </Layout>

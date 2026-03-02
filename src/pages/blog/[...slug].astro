@@ -11,32 +11,131 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await entry.render();
+
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter(p => p.slug !== entry.slug)
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+  .slice(0, 2);
+
+function extractImageUrl(body: string) {
+  if (!body) return 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop';
+  const match = body.match(/!\[.*?\]\((.*?)\)/);
+  return match ? match[1] : 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop';
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 ---
 
-<Layout title={`${entry.data.title} - AI News Daily`}>
-  <article class="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-    <header class="mb-12 text-center">
-      <time class="text-sm font-bold text-blue-600 tracking-wider uppercase mb-3 block">
-        {new Date(entry.data.pubDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-      </time>
-      <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight max-w-4xl mx-auto">
-        {entry.data.title}
-      </h1>
-      <div class="w-16 h-1 bg-blue-600 mx-auto mt-8"></div>
-    </header>
-    
-    <div class="prose prose-lg prose-slate mx-auto
-                prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-10 prose-headings:mb-5
-                prose-h2:text-3xl prose-h3:text-2xl
-                prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6
-                prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-                prose-strong:text-gray-900 prose-strong:font-bold
-                prose-ul:list-disc prose-ul:pl-6 prose-ul:mb-8 prose-ul:space-y-2
-                prose-li:text-gray-700
-                prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-5 prose-blockquote:italic prose-blockquote:text-gray-600 prose-blockquote:my-8
-                prose-hr:my-10 prose-hr:border-gray-200
-                prose-img:rounded-2xl prose-img:shadow-xl prose-img:mx-auto prose-img:w-full prose-img:object-cover prose-img:max-h-[500px]">
-      <Content />
-    </div>
-  </article>
+<Layout title={`${entry.data.title} - AI Insights`}>
+	<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+		<!-- Header / Nav -->
+		<header class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-slate-200 dark:border-slate-800 justify-between">
+			<div class="flex items-center gap-4">
+				<a class="text-slate-900 dark:text-slate-100 flex items-center justify-center hover:text-primary transition-colors" href="/">
+					<span class="material-symbols-outlined">arrow_back</span>
+				</a>
+				<h2 class="text-lg font-bold leading-tight tracking-tight text-slate-900 dark:text-white">Article</h2>
+			</div>
+			<div class="flex gap-4">
+				<button class="flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">
+					<span class="material-symbols-outlined">share</span>
+				</button>
+				<button class="flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">
+					<span class="material-symbols-outlined">bookmark</span>
+				</button>
+			</div>
+		</header>
+
+		<!-- Main Content -->
+		<main class="flex-1 max-w-4xl mx-auto w-full">
+			<article class="px-4 py-8">
+				<!-- Title & Meta -->
+				<h1 class="text-slate-900 dark:text-slate-100 text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-6">
+					{entry.data.title}
+				</h1>
+				<div class="flex items-center gap-4 mb-8 border-b border-slate-200 dark:border-slate-800 pb-8">
+					<div class="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-800 bg-cover bg-center shrink-0" style='background-image: url("https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=150&auto=format&fit=crop");'></div>
+					<div class="flex flex-col">
+						<p class="font-bold text-slate-900 dark:text-slate-100 leading-tight">AI Bot</p>
+						<p class="text-sm text-slate-500 dark:text-slate-400">Published {formatDate(entry.data.pubDate)} · 3 min read</p>
+					</div>
+					<div class="ml-auto">
+						<button class="bg-primary hover:bg-primary/90 transition-colors text-white px-4 py-1.5 rounded-full text-sm font-semibold">Follow</button>
+					</div>
+				</div>
+
+				<!-- Article Body -->
+				<!-- Enhanced prose styles for dark mode and Stitch-like appearance -->
+				<div class="prose prose-slate dark:prose-invert max-w-none space-y-6 text-lg leading-relaxed text-slate-700 dark:text-slate-300
+					prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white
+					prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+					prose-p:mb-6
+					prose-a:text-primary hover:prose-a:underline
+					prose-strong:text-slate-900 dark:prose-strong:text-white
+					prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:py-2 prose-blockquote:my-10 prose-blockquote:italic prose-blockquote:text-xl prose-blockquote:font-medium prose-blockquote:text-slate-900 dark:prose-blockquote:text-slate-100 prose-blockquote:bg-transparent
+					prose-img:rounded-xl prose-img:w-full prose-img:aspect-video prose-img:object-cover prose-img:shadow-sm
+					prose-ul:list-disc prose-ul:pl-6 prose-ul:space-y-2
+					prose-hr:my-10 prose-hr:border-slate-200 dark:prose-hr:border-slate-800">
+					<Content />
+				</div>
+
+				<!-- Share Section -->
+				<div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-4 items-center">
+					<span class="text-sm font-bold uppercase tracking-wider text-slate-500">Share this story</span>
+					<div class="flex gap-2">
+						<button class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors">
+							<span class="material-symbols-outlined text-[20px]">share</span>
+						</button>
+						<button class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors">
+							<span class="material-symbols-outlined text-[20px]">link</span>
+						</button>
+					</div>
+				</div>
+			</article>
+
+			<!-- Related News Section -->
+			{relatedPosts.length > 0 && (
+			<section class="px-4 py-12 bg-slate-50 dark:bg-slate-900/50">
+				<h3 class="text-xl font-bold mb-6 text-slate-900 dark:text-white">Related News</h3>
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+					{relatedPosts.map(post => (
+					<a class="group flex flex-col gap-3" href={`/blog/${post.slug}`}>
+						<div class="aspect-video rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800">
+							<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-300" data-alt={post.data.title} style={`background-image: url("${extractImageUrl(post.body)}");`}></div>
+						</div>
+						<div>
+							<span class="text-xs font-bold text-primary uppercase">News</span>
+							<h4 class="font-bold mt-1 text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2">{post.data.title}</h4>
+							<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{formatDate(post.data.pubDate)}</p>
+						</div>
+					</a>
+					))}
+				</div>
+			</section>
+			)}
+		</main>
+
+		<!-- Bottom Navigation -->
+		<nav class="sticky bottom-0 z-50 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-4 pb-4 pt-2">
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="/">
+				<span class="material-symbols-outlined hover:fill-[1]">home</span>
+				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Home</p>
+			</a>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+				<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">explore</span>
+				<p class="text-[10px] font-bold leading-normal uppercase tracking-wider">Discover</p>
+			</a>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+				<span class="material-symbols-outlined">auto_awesome</span>
+				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Trends</p>
+			</a>
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+				<span class="material-symbols-outlined">person</span>
+				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Profile</p>
+			</a>
+		</nav>
+	</div>
 </Layout>
