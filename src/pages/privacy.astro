@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="개인정보 처리방침 | AI 뉴스 봇">
+	<div class="flex flex-col min-h-screen">
+		<!-- Simple Header -->
+		<header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+			<div class="flex items-center justify-between px-4 h-14 max-w-2xl mx-auto w-full">
+				<div class="flex items-center gap-3">
+					<a href="/" class="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-slate-700 dark:text-slate-300">
+						<span class="material-symbols-outlined text-xl">arrow_back</span>
+					</a>
+					<h1 class="text-lg font-bold text-slate-900 dark:text-white truncate">개인정보 처리방침</h1>
+				</div>
+			</div>
+		</header>
+
+		<!-- Content -->
+		<main class="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
+            <article class="prose prose-slate dark:prose-invert max-w-none">
+                <h1>개인정보 처리방침</h1>
+                <p><strong>시행일: 2026년 3월 2일</strong></p>
+
+                <h2>1. 수집하는 개인정보의 항목 및 수집 방법</h2>
+                <p>본 블로그("AI 뉴스 봇")는 사용자 경험 향상 및 서비스 제공을 위해 아래와 같은 최소한의 개인정보를 수집할 수 있습니다.</p>
+                <ul>
+                    <li>자동 수집 항목: IP 주소, 쿠키, 방문 일시, 서비스 이용 기록, 불량 이용 기록 등 (구글 애널리틱스 등 통계 도구 및 통신 로그)</li>
+                </ul>
+
+                <h2>2. 개인정보의 수집 및 이용 목적</h2>
+                <p>수집된 정보는 다음의 목적을 위해 활용됩니다.</p>
+                <ul>
+                    <li>이용자 접속 통계 분석 및 서비스 품질 향상</li>
+                    <li>사용자 맞춤형 광고 제공(구글 애드센스 등)</li>
+                </ul>
+
+                <h2>3. 개인정보의 보유 및 이용 기간</h2>
+                <p>이용자의 개인정보는 수집 및 이용 목적이 달성되면 지체 없이 파기합니다. 단, 관련 법령의 의무가 있는 경우 해당 기간 동안 보관합니다.</p>
+
+                <h2>4. 개인정보의 제3자 제공 (구글 애드센스)</h2>
+                <p>본 블로그는 광고 게재를 위해 구글 애드센스(Google AdSense)를 사용하고 있습니다. 구글 및 제3자 업체는 사용자의 웹사이트 방문 기록 등을 이용해 맞춤형 광고를 제공하기 위해 쿠키를 사용할 수 있습니다.</p>
+                <ul>
+                    <li>사용자는 <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">구글 광고 설정</a>을 통해 맞춤형 광고를 선택 해제할 수 있습니다.</li>
+                </ul>
+
+                <h2>5. 거부권 및 불이익</h2>
+                <p>이용자는 쿠키 설치에 대한 선택권을 가지고 있습니다. 웹브라우저 설정에서 쿠키를 거부할 수 있으나, 이 경우 사이트 이용에 일부 불편이 있을 수 있습니다.</p>
+            </article>
+		</main>
+
+        <!-- Bottom Navigation -->
+		<nav class="sticky bottom-0 z-50 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-4 pb-4 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-transform cursor-pointer hover:scale-105" href="/">
+				<span class="material-symbols-outlined hover:fill-[1]">home</span>
+				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Home</p>
+			</a>
+			<button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-transform cursor-pointer hover:scale-105">
+				<span class="material-symbols-outlined">keyboard_arrow_up</span>
+				<p class="text-[10px] font-medium leading-normal uppercase tracking-wider">Top</p>
+			</button>
+		</nav>
+	</div>
+</Layout>
