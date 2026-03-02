@@ -83,8 +83,8 @@ def generate_blog_post(news_item):
     1. Base your article ONLY on the provided news item.
     2. Provide a catchy, click-worthy Korean title for the blog post on the VERY FIRST line. Do not use Markdown heading `#` for the title.
     3. Use appropriate emojis (🚀, 💡, 🌐, 📢, etc.) throughout the headings, bullet points, and text to make the post feel trendy and engaging.
-    4. Right under the title, you MUST provide a "## 3줄 요약" section with exactly three bullet points summarizing the entire article. DO NOT write "TL;DR".
-    5. Cover Image: right after the 3줄 요약 section, if an "Image URL" is provided in the News Item below, include it as a Markdown image: `![기사 관련 이미지](the_provided_image_url)`. If NO image URL is provided, DO NOT include any image in this post.
+    4. Right under the title, you MUST provide a "## 📌 요약" section. Write 3~4 bullet points summarizing the entire article. Do not use the word "3줄 요약", just use "## 📌 요약" so the heading is large.
+    5. Cover Image: right after the 요약 section, if an "Image URL" is provided in the News Item below, include it as a Markdown image: `![기사 관련 이미지](the_provided_image_url)`. If NO image URL is provided, formulate a short English image prompt based on the article's topic, replace spaces with `%20`, and use this format exactly: `![AI 이미지](https://image.pollinations.ai/prompt/YOUR_PROMPT_HERE?width=800&height=400&nologo=true)`.
     6. You MUST use Markdown headings (`##`, `###`) to structure the rest of the body into logical sections.
     7. Heavy structure: Avoid long paragraphs. Break almost everything down into bullet points (`*` or `-`).
     8. Highlight key terms: You MUST bold (`**text**`) important keywords, names, numbers, and concepts so the reader can easily scan the document.
