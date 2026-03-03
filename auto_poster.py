@@ -37,8 +37,8 @@ def fetch_rss_news():
     for url in rss_urls:
         try:
             feed = feedparser.parse(url)
-            # Get top 5 recent entries from each feed
-            for entry in feed.entries[:5]: 
+            # Get top 10 recent entries from each feed to ensure we have enough
+            for entry in feed.entries[:10]: 
                 image_url = ""
                 if "media_content" in entry and len(entry.media_content) > 0:
                     image_url = entry.media_content[0].get("url", "")
@@ -127,8 +127,14 @@ def generate_blog_post(news_item):
         if image_url:
             image_markdown = f"![기사 관련 이미지]({image_url})"
         else:
-            safe_prompt = urllib.parse.quote(news_item['title'][:100] + " artificial intelligence")
-            image_markdown = f"![AI 생성 이미지](https://image.pollinations.ai/prompt/{safe_prompt}?width=800&height=400&nologo=true)"
+            # pollinations.ai is currently returning Error 1033. Using a reliable Unsplash Source placeholder.
+            # Extract taking the first significant word from the title for a better Unsplash search
+            import string
+            words = [w.strip(string.punctuation) for w in news_item['title'].split() if len(w) > 3]
+            keyword = words[0] if words else "technology"
+            safe_keyword = urllib.parse.quote(keyword)
+            # Unsplash Source API format: https://source.unsplash.com/{width}x{height}/?{keyword},{keyword}
+            image_markdown = f"![AI 관련 이미지](https://source.unsplash.com/800x400/?artificial,intelligence,{safe_keyword})"
             
         body = body.replace("[IMAGE_PLACEHOLDER]", image_markdown)
         
@@ -184,7 +190,8 @@ def main():
     
     if news_items:
         # Generate and save a separate post for each of the top items
-        for item in news_items[:5]:
+        # Get up to 15-20 items overall depending on success rate
+        for item in news_items[:20]:
             title, description, content = generate_blog_post(item)
             if title and content:
                 save_blog_post(title, description, content)
