@@ -192,12 +192,10 @@ def generate_blog_post(news_item):
         if image_url:
             image_markdown = f"![기사 관련 이미지]({image_url})"
         else:
-            import string
-            words = [w.strip(string.punctuation) for w in news_item['title'].split() if len(w) > 3]
-            keyword = words[0] if words else "technology"
-            safe_keyword = urllib.parse.quote(keyword)
-            # Use picsum.photos with a seed for consistent, reliable placeholder images
-            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400)"
+            # Use image.pollinations.ai with the article title for more relevant layout images
+            prompt_text = "Tech news artificial intelligence " + news_item['title'].replace('/', ' ').replace('?', ' ')
+            safe_prompt = urllib.parse.quote(prompt_text)
+            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt}?width=800&height=400&nologo=true)"
             
         body = body.replace("[IMAGE_PLACEHOLDER]", image_markdown)
         
@@ -232,13 +230,10 @@ def generate_blog_post(news_item):
         if image_url:
             image_markdown = f"![기사 관련 이미지]({image_url})"
         else:
-            import string
-            # Use original English title to extract keyword for Picsum seed
-            words = [w.strip(string.punctuation) for w in raw_title.split() if w.lower() not in ['the', 'and', 'for', 'with', 'about'] and len(w) > 3]
-            keyword = words[0].lower() if words else "technology"
-            safe_keyword = urllib.parse.quote(keyword)
-            # Use picsum.photos with a seed for consistent, reliable placeholder images
-            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400)"
+            # Use image.pollinations.ai with the article title for more relevant layout images
+            prompt_text = "Tech news artificial intelligence " + raw_title.replace('/', ' ').replace('?', ' ')
+            safe_prompt = urllib.parse.quote(prompt_text)
+            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt}?width=800&height=400&nologo=true)"
             
         # If RSS summary is too short (like TechCrunch), try to fetch the real article text
         article_text = fetch_article_text(news_item['link'])
@@ -264,10 +259,8 @@ def generate_blog_post(news_item):
             translated_summary = raw_summary_clean
             
         body = f"""
-우리 삶의 영역으로 다가오는 AI 신기술 이슈입니다.
-
 💡 **핵심 요약**
-* **요약본:** {description}
+* {description}
 
 {image_markdown}
 
