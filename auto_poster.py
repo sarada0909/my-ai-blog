@@ -20,7 +20,7 @@ def fetch_article_text(url):
             soup = BeautifulSoup(res.text, 'html.parser')
             # Extract paragraphs
             paragraphs = soup.find_all('p')
-            text = " ".join([p.get_text().strip() for p in paragraphs if len(p.get_text().strip()) > 30])
+            text = "\n\n".join([p.get_text().strip() for p in paragraphs if len(p.get_text().strip()) > 30])
             return text
     except Exception as e:
         print(f"  -> Scraping failed: {e}")
@@ -101,47 +101,89 @@ def generate_blog_post(news_item):
     text += yt_text
     
     prompt = f"""
-    You are a professional AI news blogger. Based on the following news article, write an engaging and informative news blog post in Korean.
+    You are a professional AI news blogger with a friendly, highly readable writing style. 
+    Based on the following news article, write an engaging and informative news blog post in Korean.
     
-    CRITICAL INSTRUCTIONS FOR MAXIMUM READABILITY:
+    CRITICAL INSTRUCTIONS FOR MAXIMUM READABILITY & FORMATTING:
     1. Base your article ONLY on the provided news item.
-    2. Provide a catchy, click-worthy Korean title for the blog post on the VERY FIRST line. Do not use Markdown heading `#` for the title.
-    3. On the SECOND line, write a 1-sentence description summarizing the article. Start this line with 'Description: '.
-    4. Use appropriate emojis (🚀, 💡, 🌐, 📢, etc.) throughout the headings, bullet points, and text to make the post feel trendy and engaging.
-    5. Right after the description, you MUST provide a "## 📌 요약" section. Write 3~4 bullet points summarizing the entire article.
-    6. Include the following image placeholder exactly as it is right after the 요약 section:
+    2. Provide a catchy, click-worthy Korean title on the VERY FIRST line. Do NOT use Markdown heading `#` for the title.
+    3. On the SECOND line, write a 1-sentence description. Start this line with 'Description: '.
+    4. Tone of Voice: Use polite, engaging, and professional Korean (`~입니다`, `~합니다`, `~있습니다`). Be conversational, explaining the situation as if introducing an exciting new technology.
+    
+    [BODY STRUCTURE RULES]
+    5. Start the body with an Introduction Section: Introduce the topic with a `<br>` and a paragraph of text.
+    
+    6. Main Point Section: Use a Header formatted exactly like this: `💡 **[Main Point Title here]**`
+       After the header, break the details down into a bulleted list. 
+       - EXACT BULLET FORMAT: `* **[Keyword/Concept]:** [Explanation]`
+       - EVERY single bullet point MUST start with a bolded keyword followed by a colon. Do not write long paragraphs under bullets. Keep them sharp and readable.
+       
+    7. Image Placement: Right after this first Main Point Section, you MUST insert the following placeholder verbatim on a new line:
        [IMAGE_PLACEHOLDER]
-    7. You MUST use Markdown headings (`##`, `###`) to structure the rest of the body into logical sections.
-    8. Heavy structure: Avoid long paragraphs. Break almost everything down into bullet points (`*` or `-`).
-    9. Highlight key terms: You MUST bold (`**text**`) important keywords, names, numbers, and concepts so the reader can easily scan the document.
-    10. You MUST use generous line breaks (empty lines) between sections and lists.
+       
+    8. Secondary Section: For the next logical chunk of information, use a Header formatted exactly like this: `🌐 **[Secondary Title here]**`
+       Write a brief intro paragraph for this section, and then follow it with another bulleted list formatted identically to rule #6 (`* **[Keyword]:** [Explanation]`).
+       
+    9. Conclusion/Future Outlook Section: Use a Header like this: `🚀 **[Future Outlook/Conclusion here]**`
+       Provide a concluding thought or summary of why this matters.
+       
+    10. Formatting Rules: 
+        - Generous spacing: Always leave an empty line between headers, paragraphs, and lists.
+        - Emphasize keywords: Liberally highlight important proper nouns or concepts using bold (`**text**`) inside paragraphs too.
+        
     11. YouTube Videos: If any "YouTube Links" are provided in the News Item below, you MUST embed them prominently in the post using this format: `[▶️ 관련 유튜브 영상 보기](YOUTUBE_LINK_HERE)`.
+    
     12. At the very end of the post, you MUST include a "출처" (Source) section separated by a horizontal rule (`---`), formatted exactly like this:
        
        ---
        ### 출처
        * **원문 제목:** [English Title]
        * **출처:** [Source Name]
-       * [원문 기사 보기](the_link_here)
+       * [원문 기사 보러가기](the_link_here)
     
     News Item:
     {text}
     """
     
     try:
-        response = model.generate_content(prompt)
+        response = None
+        for attempt in range(5):
+            try:
+                response = model.generate_content(prompt)
+                break
+            except Exception as api_e:
+                if '429' in str(api_e) or 'exhaust' in str(api_e).lower() or 'quota' in str(api_e).lower():
+                    print(f"  -> Gemini API Rate Limit Hit (Attempt {attempt+1}/5). Waiting 30 seconds before retrying...")
+                    time.sleep(30)
+                else:
+                    raise api_e
+                    
+        if not response:
+            raise Exception("Failed after retries")
+            
         content = response.text
         
-        # Extract title and description
-        lines = [line.strip() for line in content.strip().split('\n') if line.strip()]
-        title = lines[0].replace("#", "").strip() if lines else "오늘의 AI 뉴스"
+        # Extract title and description, PRESERVING empty lines for markdown
+        lines = content.strip().split('\n')
+        non_empty_lines = [l.strip() for l in lines if l.strip()]
         
+        title = non_empty_lines[0].replace("#", "").strip() if non_empty_lines else "오늘의 AI 뉴스"
         description = f"{title}에 대한 AI 요약 뉴스입니다."
-        body_start_idx = 1
         
-        if len(lines) > 1 and lines[1].startswith("Description:"):
-            description = lines[1].replace("Description:", "").strip()
-            body_start_idx = 2
+        body_start_idx = 1
+        # Find where the title ends in the original lines
+        for i, line in enumerate(lines):
+            if line.strip() == non_empty_lines[0]:
+                body_start_idx = i + 1
+                break
+                
+        if len(non_empty_lines) > 1 and non_empty_lines[1].startswith("Description:"):
+            description = non_empty_lines[1].replace("Description:", "").strip()
+            # Advance start index past description
+            for i in range(body_start_idx, len(lines)):
+                if lines[i].strip().startswith("Description:"):
+                    body_start_idx = i + 1
+                    break
             
         body = "\n".join(lines[body_start_idx:])
         
@@ -222,12 +264,14 @@ def generate_blog_post(news_item):
             translated_summary = raw_summary_clean
             
         body = f"""
-## 📌 핵심 요약
-* {description}
+우리 삶의 영역으로 다가오는 AI 신기술 이슈입니다.
+
+💡 **핵심 요약**
+* **요약본:** {description}
 
 {image_markdown}
 
-## 🚀 기사 내용
+🌐 **기사 내용**
 {translated_summary}
 
 ---
@@ -285,10 +329,9 @@ def main():
     
     if news_items:
         # Generate and save a separate post for each of the top items
-        # Process up to 15 items, but add a strict delay to prevent Gemini API rate limits (15 RPM free tier)
-        # 15 seconds guarantees we only do 4 requests per minute, well below the limit.
+        # Process up to 2 items to guarantee successful Gemini generation without quota limits
         success_count = 0
-        target_amount = 15
+        target_amount = 2
         
         for item in news_items:
             if success_count >= target_amount:
@@ -302,9 +345,9 @@ def main():
                 safe_title = item['title'].encode('ascii', 'ignore').decode('ascii')
                 print(f"Failed to generate post for: {safe_title}")
                 
-            # Sleep for just 2 seconds since we have fallback
+            # Sleep for 5 seconds to pace API requests
             print("Processing next item...")
-            time.sleep(2)
+            time.sleep(5)
             
         print(f"Bot finished successfully. Generated {success_count} articles.")
     else:

@@ -99,7 +99,7 @@ function formatDate(dateStr: string) {
 						</div>
 						<div class="flex items-center text-[11px] text-slate-400 gap-3">
 							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> {formatDate(post.data.pubDate)}</span>
-							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">visibility</span> {Math.floor(Math.random() * 80) + 12}</span>
+							<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">visibility</span> <span class="view-count" data-slug={post.slug}>-</span></span>
 						</div>
 					</div>
 				</a>
@@ -147,7 +147,7 @@ function formatDate(dateStr: string) {
 	<!-- Client-side Search Script -->
 	<script>
 		document.addEventListener('DOMContentLoaded', () => {
-			const searchInput = document.getElementById('search-input') as HTMLInputElement;
+			const searchInput = document.getElementById('search-input');
 			const navSearchBtn = document.getElementById('nav-search-btn');
 			const navNewBtn = document.getElementById('nav-new-btn');
 			const articleCards = document.querySelectorAll('.article-card');
@@ -172,7 +172,7 @@ function formatDate(dateStr: string) {
 
 			// Real-time Search Filtering
 			searchInput?.addEventListener('input', (e) => {
-				const term = (e.target as HTMLInputElement).value.toLowerCase();
+				const term = e.target.value.toLowerCase();
 				let visibleCount = 0;
 
 				// Hide featured hero if searching
@@ -190,10 +190,10 @@ function formatDate(dateStr: string) {
 					const text = titleEl?.textContent?.toLowerCase() || '';
 					
 					if (text.includes(term)) {
-						(card as HTMLElement).style.display = 'flex';
+						card.style.display = 'flex';
 						visibleCount++;
 					} else {
-						(card as HTMLElement).style.display = 'none';
+						card.style.display = 'none';
 					}
 				});
 
@@ -202,6 +202,26 @@ function formatDate(dateStr: string) {
 					if (noResults) noResults.style.display = 'block';
 				} else {
 					if (noResults) noResults.style.display = 'none';
+				}
+			});
+
+			// Fetch Real View Counts
+			const viewElements = document.querySelectorAll('.view-count');
+			viewElements.forEach((el) => {
+				const slug = el.getAttribute('data-slug');
+				if (slug) {
+					fetch(`https://api.counterapi.dev/v1/my-ai-blog/${slug}`)
+						.then(res => res.json())
+						.then(data => {
+							if (data && typeof data.count === 'number') {
+								el.textContent = data.count.toString();
+							} else {
+								el.textContent = '0';
+							}
+						})
+						.catch(() => {
+							el.textContent = '0';
+						});
 				}
 			});
 		});

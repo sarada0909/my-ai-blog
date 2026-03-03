@@ -171,7 +171,7 @@ const imageUrl = extractImageUrl(entry.body);
 
 			// Bookmark logic
 			document.getElementById('btn-bookmark')?.addEventListener('click', (e) => {
-				const icon = (e.currentTarget as HTMLElement).querySelector('.material-symbols-outlined');
+				const icon = e.currentTarget.querySelector('.material-symbols-outlined');
 				if (icon) {
 					if (icon.textContent === 'bookmark') {
 						icon.textContent = 'bookmark_added';
@@ -183,6 +183,13 @@ const imageUrl = extractImageUrl(entry.body);
 					}
 				}
 			});
+
+			// Increment Real View Count
+			const slug = window.location.pathname.split('/').filter(Boolean).pop();
+			if (slug) {
+				fetch(`https://api.counterapi.dev/v1/my-ai-blog/${slug}/up`)
+					.catch(err => console.error('Failed to increment view count', err));
+			}
 		});
 	</script>
 </Layout>
