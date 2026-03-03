@@ -1,6 +1,7 @@
 import os
 import re
 import datetime
+import string
 from dotenv import load_dotenv
 import feedparser
 import urllib.parse
@@ -36,6 +37,66 @@ def fetch_article_text(url):
     except Exception as e:
         print(f"  -> Scraping failed: {e}")
     return ""
+
+def fetch_og_image(url):
+    """Fetches the Open Graph image (og:image) from an article page."""
+    print(f"  -> Trying to fetch OG image from: {url}")
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code == 200:
+            soup = BeautifulSoup(res.text, 'html.parser')
+            # Try og:image first
+            og_img = soup.find('meta', property='og:image')
+            if og_img and og_img.get('content'):
+                img_url = og_img['content'].strip()
+                if img_url.startswith('http'):
+                    print(f"  -> Found OG image: {img_url[:80]}...")
+                    return img_url
+            # Try twitter:image as fallback
+            tw_img = soup.find('meta', attrs={'name': 'twitter:image'})
+            if tw_img and tw_img.get('content'):
+                img_url = tw_img['content'].strip()
+                if img_url.startswith('http'):
+                    print(f"  -> Found Twitter image: {img_url[:80]}...")
+                    return img_url
+    except Exception as e:
+        print(f"  -> OG image fetch failed: {e}")
+    return ""
+
+def get_article_image(news_item):
+    """Gets the best available image for an article using a 3-tier strategy:
+    1. RSS media image (already extracted)
+    2. OG image from original article page
+    3. AI-generated image via Pollinations.ai
+    """
+    # Tier 1: RSS media image
+    image_url = news_item.get('image', '')
+    if image_url:
+        print(f"  -> Using RSS media image")
+        return f"![기사 관련 이미지]({image_url})"
+    
+    # Tier 2: OG image from original article
+    og_image = fetch_og_image(news_item.get('link', ''))
+    if og_image:
+        return f"![기사 관련 이미지]({og_image})"
+    
+    # Tier 3: AI-generated image via Pollinations.ai
+    print(f"  -> Generating AI image via Pollinations.ai")
+    title = news_item.get('title', 'AI technology')
+    words = [w.strip(string.punctuation) for w in title.split()]
+    stop_words = {'the', 'and', 'for', 'with', 'about', 'this', 'that', 'from',
+                  'what', 'how', 'has', 'reportedly', 'surpassed', 'annualized',
+                  'revenue', 'says', 'could', 'would', 'will', 'just', 'into',
+                  'than', 'more', 'after', 'over', 'like', 'been', 'also'}
+    keywords = [w.lower() for w in words if len(w) > 2 and w.lower() not in stop_words]
+    prompt_text = ' '.join(keywords[:5]) if keywords else 'artificial intelligence technology'
+    
+    # Build Pollinations.ai URL — free, no API key needed
+    encoded_prompt = urllib.parse.quote(f"A professional, modern tech illustration about: {prompt_text}. Clean digital art style, vibrant colors, no text.")
+    ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=400&nologo=true"
+    
+    return f"![AI 생성 이미지]({ai_image_url})"
 
 # Initialize translator
 translator = GoogleTranslator(source='auto', target='ko')
@@ -198,26 +259,9 @@ def generate_blog_post(news_item):
             
         body = "\n".join(lines[body_start_idx:])
         
-        # Replace image placeholder
-        image_url = news_item.get('image', '')
-        if image_url:
-            image_markdown = f"![기사 관련 이미지]({image_url})"
-        else:
-            # Extract keywords from title for image generation
-            import string
-            # Remove punctuation and split
-            words = [w.strip(string.punctuation) for w in news_item['title'].split()]
-            # Filter out common stop words and short words
-            stop_words = {'the', 'and', 'for', 'with', 'about', 'this', 'that', 'from', 'what', 'how', 'has', 'reportedly', 'surpassed', 'annualized', 'revenue'}
-            keywords = [w.lower() for w in words if len(w) > 3 and w.lower() not in stop_words]
-            
-            # Get the top 1-2 keywords
-            primary_keywords = "-".join(keywords[:2]) if keywords else "technology-ai"
-            safe_keyword = urllib.parse.quote(primary_keywords)
-            
-            # Use picsum.photos with a seed for distinct, reliable placeholder images (bypasses loremflickr static cat bug)
-            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400?grayscale=1&blur=2)"
-            
+        # Replace image placeholder using 3-tier strategy
+        image_markdown = get_article_image(news_item)
+        
         body = body.replace("[IMAGE_PLACEHOLDER]", image_markdown)
         
         return title, description, body
@@ -247,22 +291,8 @@ def generate_blog_post(news_item):
             description = raw_desc
         
         # Build a basic fallback body
-        image_url = news_item.get('image', '')
-        if image_url:
-            image_markdown = f"![기사 관련 이미지]({image_url})"
-        else:
-            # Extract keywords from title for image generation
-            import string
-            words = [w.strip(string.punctuation) for w in raw_title.split()]
-            stop_words = {'the', 'and', 'for', 'with', 'about', 'this', 'that', 'from', 'what', 'how', 'has', 'reportedly', 'surpassed', 'annualized', 'revenue'}
-            keywords = [w.lower() for w in words if len(w) > 3 and w.lower() not in stop_words]
-            
-            primary_keywords = "-".join(keywords[:2]) if keywords else "technology-ai"
-            safe_keyword = urllib.parse.quote(primary_keywords)
-            
-            # Use picsum.photos with a seed for distinct, reliable placeholder images (bypasses loremflickr static cat bug)
-            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400?grayscale=1&blur=2)"
-            
+        image_markdown = get_article_image(news_item)
+        
         # If RSS summary is too short (like TechCrunch), try to fetch the real article text
         article_text = fetch_article_text(news_item['link'])
         if len(article_text) > 200:
