@@ -5,9 +5,26 @@ from dotenv import load_dotenv
 import feedparser
 import urllib.parse
 import time
+import requests
 import google.generativeai as genai
 from deep_translator import GoogleTranslator
 from bs4 import BeautifulSoup
+
+def fetch_article_text(url):
+    """Fetches the actual article content from the URL to bypass short RSS summaries."""
+    print(f"  -> Scraping full text from: {url}")
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code == 200:
+            soup = BeautifulSoup(res.text, 'html.parser')
+            # Extract paragraphs
+            paragraphs = soup.find_all('p')
+            text = " ".join([p.get_text().strip() for p in paragraphs if len(p.get_text().strip()) > 30])
+            return text
+    except Exception as e:
+        print(f"  -> Scraping failed: {e}")
+    return ""
 
 # Initialize translator
 translator = GoogleTranslator(source='auto', target='ko')
@@ -181,10 +198,16 @@ def generate_blog_post(news_item):
             # Use picsum.photos with a seed for consistent, reliable placeholder images
             image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400)"
             
-        raw_summary_html = news_item.get('summary', '조금 더 상세한 정보를 원하시면 원문을 확인해주세요.')
+        # If RSS summary is too short (like TechCrunch), try to fetch the real article text
+        article_text = fetch_article_text(news_item['link'])
+        if len(article_text) > 200:
+            raw_summary_html = article_text
+        else:
+            raw_summary_html = news_item.get('summary', '조금 더 상세한 정보를 원하시면 원문을 확인해주세요.')
+            
         try:
             soup2 = BeautifulSoup(raw_summary_html, "html.parser")
-            raw_summary_clean = soup2.get_text(separator='\n').strip()
+            raw_summary_clean = soup2.get_text(separator='\n\n').strip()
         except:
             raw_summary_clean = re.sub('<[^<]+?>', ' ', raw_summary_html).strip()
         
@@ -201,14 +224,11 @@ def generate_blog_post(news_item):
         body = f"""
 ## 📌 핵심 요약
 * {description}
-* 전체 기사의 상세 내용은 아래 원문 링크를 통해 확인하실 수 있습니다.
 
 {image_markdown}
 
-## 🚀 기사 미리보기 (요약본)
+## 🚀 기사 내용
 {translated_summary}
-
-> **[💡 더 읽어보기 (출처 원문 기사)]({news_item['link']})**
 
 ---
 ### 🔗 원문 정보
