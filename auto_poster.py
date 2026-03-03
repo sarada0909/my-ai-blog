@@ -204,8 +204,8 @@ def generate_blog_post(news_item):
             primary_keywords = "-".join(keywords[:2]) if keywords else "technology-ai"
             safe_keyword = urllib.parse.quote(primary_keywords)
             
-            # Use unsplash source via API or reliable loremflickr with keywords
-            image_markdown = f"![AI 관련 이미지](https://loremflickr.com/800/400/{safe_keyword},ai,tech/all)"
+            # Use picsum.photos with a seed for distinct, reliable placeholder images (bypasses loremflickr static cat bug)
+            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400?grayscale=1&blur=2)"
             
         body = body.replace("[IMAGE_PLACEHOLDER]", image_markdown)
         
@@ -249,7 +249,8 @@ def generate_blog_post(news_item):
             primary_keywords = "-".join(keywords[:2]) if keywords else "technology-ai"
             safe_keyword = urllib.parse.quote(primary_keywords)
             
-            image_markdown = f"![AI 관련 이미지](https://loremflickr.com/800/400/{safe_keyword},ai,tech/all)"
+            # Use picsum.photos with a seed for distinct, reliable placeholder images (bypasses loremflickr static cat bug)
+            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400?grayscale=1&blur=2)"
             
         # If RSS summary is too short (like TechCrunch), try to fetch the real article text
         article_text = fetch_article_text(news_item['link'])
