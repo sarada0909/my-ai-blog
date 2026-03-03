@@ -2,8 +2,8 @@ name: Daily AI News Bot
 
 on:
   schedule:
-    # 매일 아침 8시(KST)에 실행 (UTC 기준 23:00)
-    - cron: '0 23 * * *'
+    # 매일 아침 8시 15분경(KST)에 실행 (UTC 기준 23:15, 정각 실행 과부하 방지)
+    - cron: '15 23 * * *'
   workflow_dispatch: # GitHub 웹사이트에서 수동으로 버튼을 눌러 실행할 수 있게 함
 
 jobs:
