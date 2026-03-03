@@ -139,7 +139,7 @@ const imageUrl = extractImageUrl(entry.body);
 	</div>
 
 	<!-- Client-side Interactive Script -->
-	<script>
+	<script lang="ts">
 		document.addEventListener('DOMContentLoaded', () => {
 			// Sharing logic
 			const shareAction = async () => {
@@ -171,7 +171,7 @@ const imageUrl = extractImageUrl(entry.body);
 
 			// Bookmark logic
 			document.getElementById('btn-bookmark')?.addEventListener('click', (e) => {
-				const icon = e.currentTarget.querySelector('.material-symbols-outlined');
+				const icon = (e.currentTarget as HTMLElement).querySelector('.material-symbols-outlined');
 				if (icon) {
 					if (icon.textContent === 'bookmark') {
 						icon.textContent = 'bookmark_added';

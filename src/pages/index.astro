@@ -145,9 +145,9 @@ function formatDate(dateStr: string) {
 	</nav>
 
 	<!-- Client-side Search Script -->
-	<script>
+	<script lang="ts">
 		document.addEventListener('DOMContentLoaded', () => {
-			const searchInput = document.getElementById('search-input');
+			const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
 			const navSearchBtn = document.getElementById('nav-search-btn');
 			const navNewBtn = document.getElementById('nav-new-btn');
 			const articleCards = document.querySelectorAll('.article-card');
@@ -172,7 +172,8 @@ function formatDate(dateStr: string) {
 
 			// Real-time Search Filtering
 			searchInput?.addEventListener('input', (e) => {
-				const term = e.target.value.toLowerCase();
+				const target = e.target as HTMLInputElement;
+				const term = target.value.toLowerCase();
 				let visibleCount = 0;
 
 				// Hide featured hero if searching
@@ -190,10 +191,10 @@ function formatDate(dateStr: string) {
 					const text = titleEl?.textContent?.toLowerCase() || '';
 					
 					if (text.includes(term)) {
-						card.style.display = 'flex';
+						(card as HTMLElement).style.display = 'flex';
 						visibleCount++;
 					} else {
-						card.style.display = 'none';
+						(card as HTMLElement).style.display = 'none';
 					}
 				});
 
