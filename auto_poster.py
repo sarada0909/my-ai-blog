@@ -20,8 +20,19 @@ def fetch_article_text(url):
             soup = BeautifulSoup(res.text, 'html.parser')
             # Extract paragraphs
             paragraphs = soup.find_all('p')
-            text = "\n\n".join([p.get_text().strip() for p in paragraphs if len(p.get_text().strip()) > 30])
-            return text
+            
+            # Filter out promotional text (like TechCrunch events, newsletters)
+            promo_spam = ['founder summit', 'disrupt 20', 'ticket', 'save up to', 'register now', 'subscribe to our', 'newsletter']
+            
+            valid_p = []
+            for p in paragraphs:
+                text = p.get_text().strip()
+                if len(text) > 30:
+                    text_lower = text.lower()
+                    if not any(spam in text_lower for spam in promo_spam):
+                        valid_p.append(text)
+                        
+            return "\n\n".join(valid_p)
     except Exception as e:
         print(f"  -> Scraping failed: {e}")
     return ""
@@ -105,7 +116,7 @@ def generate_blog_post(news_item):
     Based on the following news article, write an engaging and informative news blog post in Korean.
     
     CRITICAL INSTRUCTIONS FOR MAXIMUM READABILITY & FORMATTING:
-    1. Base your article ONLY on the provided news item.
+    1. Base your article ONLY on the provided news item. COMPLETELY EXCLUDE AND IGNORE any promotional content, advertisements, event ticket sales (e.g., Founder Summit, Disrupt etc.), and newsletter signups. DO NOT include them in your output.
     2. Provide a catchy, click-worthy Korean title on the VERY FIRST line. Do NOT use Markdown heading `#` for the title.
     3. On the SECOND line, write a 1-sentence description. Start this line with 'Description: '.
     4. Tone of Voice: Use polite, engaging, and professional Korean (`~입니다`, `~합니다`, `~있습니다`). Be conversational, explaining the situation as if introducing an exciting new technology.
