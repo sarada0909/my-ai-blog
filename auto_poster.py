@@ -192,10 +192,20 @@ def generate_blog_post(news_item):
         if image_url:
             image_markdown = f"![기사 관련 이미지]({image_url})"
         else:
-            # Use image.pollinations.ai with the article title for more relevant layout images
-            prompt_text = "Tech news artificial intelligence " + news_item['title'].replace('/', ' ').replace('?', ' ')
-            safe_prompt = urllib.parse.quote(prompt_text)
-            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt})"
+            # Extract keywords from title for image generation
+            import string
+            # Remove punctuation and split
+            words = [w.strip(string.punctuation) for w in news_item['title'].split()]
+            # Filter out common stop words and short words
+            stop_words = {'the', 'and', 'for', 'with', 'about', 'this', 'that', 'from', 'what', 'how', 'has', 'reportedly', 'surpassed', 'annualized', 'revenue'}
+            keywords = [w.lower() for w in words if len(w) > 3 and w.lower() not in stop_words]
+            
+            # Get the top 1-2 keywords
+            primary_keywords = "-".join(keywords[:2]) if keywords else "technology-ai"
+            safe_keyword = urllib.parse.quote(primary_keywords)
+            
+            # Use unsplash source via API or reliable loremflickr with keywords
+            image_markdown = f"![AI 관련 이미지](https://loremflickr.com/800/400/{safe_keyword},ai,tech/all)"
             
         body = body.replace("[IMAGE_PLACEHOLDER]", image_markdown)
         
@@ -230,10 +240,16 @@ def generate_blog_post(news_item):
         if image_url:
             image_markdown = f"![기사 관련 이미지]({image_url})"
         else:
-            # Use image.pollinations.ai with the article title for more relevant layout images
-            prompt_text = "Tech news artificial intelligence " + raw_title.replace('/', ' ').replace('?', ' ')
-            safe_prompt = urllib.parse.quote(prompt_text)
-            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt})"
+            # Extract keywords from title for image generation
+            import string
+            words = [w.strip(string.punctuation) for w in raw_title.split()]
+            stop_words = {'the', 'and', 'for', 'with', 'about', 'this', 'that', 'from', 'what', 'how', 'has', 'reportedly', 'surpassed', 'annualized', 'revenue'}
+            keywords = [w.lower() for w in words if len(w) > 3 and w.lower() not in stop_words]
+            
+            primary_keywords = "-".join(keywords[:2]) if keywords else "technology-ai"
+            safe_keyword = urllib.parse.quote(primary_keywords)
+            
+            image_markdown = f"![AI 관련 이미지](https://loremflickr.com/800/400/{safe_keyword},ai,tech/all)"
             
         # If RSS summary is too short (like TechCrunch), try to fetch the real article text
         article_text = fetch_article_text(news_item['link'])
