@@ -195,7 +195,7 @@ def generate_blog_post(news_item):
             # Use image.pollinations.ai with the article title for more relevant layout images
             prompt_text = "Tech news artificial intelligence " + news_item['title'].replace('/', ' ').replace('?', ' ')
             safe_prompt = urllib.parse.quote(prompt_text)
-            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt}?width=800&height=400&nologo=true)"
+            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt})"
             
         body = body.replace("[IMAGE_PLACEHOLDER]", image_markdown)
         
@@ -233,7 +233,7 @@ def generate_blog_post(news_item):
             # Use image.pollinations.ai with the article title for more relevant layout images
             prompt_text = "Tech news artificial intelligence " + raw_title.replace('/', ' ').replace('?', ' ')
             safe_prompt = urllib.parse.quote(prompt_text)
-            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt}?width=800&height=400&nologo=true)"
+            image_markdown = f"![AI 관련 이미지](https://image.pollinations.ai/prompt/{safe_prompt})"
             
         # If RSS summary is too short (like TechCrunch), try to fetch the real article text
         article_text = fetch_article_text(news_item['link'])
