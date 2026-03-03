@@ -1,20 +1,17 @@
 ---
 title: "Salesforce, 직장 AI 분야에서 Microsoft 및 Google과 경쟁하면서 새로운 Slackbot AI 에이전트 출시"
-pubDate: "2026-03-03T09:57:22.340906"
+pubDate: "2026-03-03T10:07:58.129914"
 description: "Salesforce는 화요일에 회사의 작업 공간인 Slackbot의 완전히 재구성된 버전을 출시했습니다."
 ---
 
 
-## 📌 요약
-* 기사 원문 요약 내용입니다.
+## 📌 핵심 요약
 * Salesforce는 화요일에 회사의 작업 공간인 Slackbot의 완전히 재구성된 버전을 출시했습니다.
-* 자세한 내용은 아래 원문을 참고해 주세요.
+* 전체 기사의 상세 내용은 아래 원문 링크를 통해 확인하실 수 있습니다.
 
 ![AI 관련 이미지](https://picsum.photos/seed/salesforce/800/400)
 
-## 🚀 상세 내용
-이 기사는 외부 통신 문제로 자동 요약이 지연되어 번역된 원문 데이터를 노출합니다.
-
+## 🚀 기사 미리보기 (요약본)
 세일즈포스
  화요일에 완전히 재구축된 버전을 출시했습니다. 
 슬랙봇
@@ -47,9 +44,11 @@ Salesforce의 내부 실험: 80,000명의 직원이 Slackbot을 테스트하여 
 , 이를 80,000명의 직원 모두에게 배포했습니다. Slack의 최고 마케팅 책임자인 Ryan Gavin에 따르면 결과는 놀라웠습니다. "Salesforce 역사상 가장 빠르게 채택된 제품입니다."
 내부 데이터에 따르면 Salesforce 직원의 2/3가 새로운 Slackbot을 사용해 보았고, 이들 사용자 중 80%가 계속해서 정기적으로 사용하고 있는 것으로 나타났습니다. 인터나
 
+> **[💡 더 읽어보기 (출처 원문 기사)](https://venturebeat.com/technology/salesforce-rolls-out-new-slackbot-ai-agent-as-it-battles-microsoft-and)**
+
 ---
-### 출처
+### 🔗 원문 정보
 * **원문 제목:** Salesforce rolls out new Slackbot AI agent as it battles Microsoft and Google in workplace AI
 * **출처:** AI | VentureBeat
-* [원문 기사 보기](https://venturebeat.com/technology/salesforce-rolls-out-new-slackbot-ai-agent-as-it-battles-microsoft-and)
+* [원문 기사 보러가기](https://venturebeat.com/technology/salesforce-rolls-out-new-slackbot-ai-agent-as-it-battles-microsoft-and)
 

@@ -1,20 +1,17 @@
 ---
 title: "Anthropic은 파일에서 작동하는 Claude Desktop 에이전트인 Cowork를 출시합니다. 코딩이 필요하지 않습니다."
-pubDate: "2026-03-03T09:57:27.724534"
+pubDate: "2026-03-03T10:08:02.085969"
 description: "Anthropic은 월요일에 야생의 힘을 확장하는 새로운 AI 에이전트 기능인 Cowork를 출시했습니다."
 ---
 
 
-## 📌 요약
-* 기사 원문 요약 내용입니다.
+## 📌 핵심 요약
 * Anthropic은 월요일에 야생의 힘을 확장하는 새로운 AI 에이전트 기능인 Cowork를 출시했습니다.
-* 자세한 내용은 아래 원문을 참고해 주세요.
+* 전체 기사의 상세 내용은 아래 원문 링크를 통해 확인하실 수 있습니다.
 
 ![AI 관련 이미지](https://picsum.photos/seed/anthropic/800/400)
 
-## 🚀 상세 내용
-이 기사는 외부 통신 문제로 자동 요약이 지연되어 번역된 원문 데이터를 노출합니다.
-
+## 🚀 기사 미리보기 (요약본)
 인류학
  석방됨 
 코워크
@@ -59,9 +56,11 @@ Anthropic은 여러 가지 예시를 제공합니다. 각 파일을 정렬하고
  X에서. "스크린샷 더미에서 스프레드시트를 만들거나 흩어져 있는 노트에서 첫 번째 초안을 만들어 보세요."
 아키텍처는 "에이전트 루프"라고 알려진 것에 의존합니다. 사용자가 작업을 할당하면 AI는 단순히 텍스트 응답을 생성하지 않습니다. 대신 계획을 세우고, 단계를 병렬로 실행하고, 자체 작업을 확인하고, 장애물에 부딪히면 설명을 요청합니다. 사용자는 여러 작업을 대기열에 추가하고 Claude가
 
+> **[💡 더 읽어보기 (출처 원문 기사)](https://venturebeat.com/technology/anthropic-launches-cowork-a-claude-desktop-agent-that-works-in-your-files-no)**
+
 ---
-### 출처
+### 🔗 원문 정보
 * **원문 제목:** Anthropic launches Cowork, a Claude Desktop agent that works in your files — no coding required
 * **출처:** AI | VentureBeat
-* [원문 기사 보기](https://venturebeat.com/technology/anthropic-launches-cowork-a-claude-desktop-agent-that-works-in-your-files-no)
+* [원문 기사 보러가기](https://venturebeat.com/technology/anthropic-launches-cowork-a-claude-desktop-agent-that-works-in-your-files-no)
 

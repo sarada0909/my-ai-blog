@@ -199,23 +199,22 @@ def generate_blog_post(news_item):
             translated_summary = raw_summary_clean
             
         body = f"""
-## 📌 요약
-* 기사 원문 요약 내용입니다.
+## 📌 핵심 요약
 * {description}
-* 자세한 내용은 아래 원문을 참고해 주세요.
+* 전체 기사의 상세 내용은 아래 원문 링크를 통해 확인하실 수 있습니다.
 
 {image_markdown}
 
-## 🚀 상세 내용
-이 기사는 외부 통신 문제로 자동 요약이 지연되어 번역된 원문 데이터를 노출합니다.
-
+## 🚀 기사 미리보기 (요약본)
 {translated_summary}
 
+> **[💡 더 읽어보기 (출처 원문 기사)]({news_item['link']})**
+
 ---
-### 출처
+### 🔗 원문 정보
 * **원문 제목:** {raw_title}
 * **출처:** {news_item['source']}
-* [원문 기사 보기]({news_item['link']})
+* [원문 기사 보러가기]({news_item['link']})
 """
         return title, description, body
 
