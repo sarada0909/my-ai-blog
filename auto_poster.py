@@ -3,9 +3,13 @@ import re
 import datetime
 from dotenv import load_dotenv
 import feedparser
-import google.generativeai as genai
 import urllib.parse
 import time
+import google.generativeai as genai
+from deep_translator import GoogleTranslator
+
+# Initialize translator
+translator = GoogleTranslator(source='auto', target='ko')
 
 # Load environment variables from .env file
 load_dotenv()
@@ -128,14 +132,12 @@ def generate_blog_post(news_item):
         if image_url:
             image_markdown = f"![기사 관련 이미지]({image_url})"
         else:
-            # pollinations.ai is currently returning Error 1033. Using a reliable Unsplash Source placeholder.
-            # Extract taking the first significant word from the title for a better Unsplash search
             import string
             words = [w.strip(string.punctuation) for w in news_item['title'].split() if len(w) > 3]
             keyword = words[0] if words else "technology"
             safe_keyword = urllib.parse.quote(keyword)
-            # Unsplash Source API format: https://source.unsplash.com/{width}x{height}/?{keyword},{keyword}
-            image_markdown = f"![AI 관련 이미지](https://source.unsplash.com/800x400/?artificial,intelligence,{safe_keyword})"
+            # Use picsum.photos with a seed for consistent, reliable placeholder images
+            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400)"
             
         body = body.replace("[IMAGE_PLACEHOLDER]", image_markdown)
         
@@ -143,8 +145,18 @@ def generate_blog_post(news_item):
     except Exception as e:
         print(f"Error generating content (falling back to RSS data): {e}")
         # Fallback to pure RSS data when Gemini API hits a rate limit
-        title = f"[속보] {news_item['title']}"
-        description = news_item.get('summary', '')[:100] + "..." if news_item.get('summary') else f"{title}에 대한 소식입니다."
+        # Remove [속보] and translate title
+        raw_title = news_item['title']
+        try:
+            title = translator.translate(raw_title)
+        except:
+            title = raw_title
+            
+        raw_desc = news_item.get('summary', '')[:100] + "..." if news_item.get('summary') else f"{raw_title} news summary."
+        try:
+            description = translator.translate(raw_desc)
+        except:
+            description = raw_desc
         
         # Build a basic fallback body
         image_url = news_item.get('image', '')
@@ -152,10 +164,18 @@ def generate_blog_post(news_item):
             image_markdown = f"![기사 관련 이미지]({image_url})"
         else:
             import string
-            words = [w.strip(string.punctuation) for w in news_item['title'].split() if len(w) > 3]
-            keyword = words[0] if words else "technology"
+            # Use original English title to extract keyword for Picsum seed
+            words = [w.strip(string.punctuation) for w in raw_title.split() if w.lower() not in ['the', 'and', 'for', 'with', 'about'] and len(w) > 3]
+            keyword = words[0].lower() if words else "technology"
             safe_keyword = urllib.parse.quote(keyword)
-            image_markdown = f"![AI 관련 이미지](https://source.unsplash.com/800x400/?artificial,intelligence,{safe_keyword})"
+            # Use picsum.photos with a seed for consistent, reliable placeholder images
+            image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400)"
+            
+        raw_summary = news_item.get('summary', '조금 더 상세한 정보를 원하시면 원문을 확인해주세요.')
+        try:
+            translated_summary = translator.translate(raw_summary)
+        except:
+            translated_summary = raw_summary
             
         body = f"""
 ## 📌 요약
@@ -166,13 +186,13 @@ def generate_blog_post(news_item):
 {image_markdown}
 
 ## 🚀 상세 내용
-이 기사는 외부 통신 문제로 자동 요약이 지연되어 원문 데이터를 직접 노출합니다.
+이 기사는 외부 통신 문제로 자동 요약이 지연되어 번역된 원문 데이터를 노출합니다.
 
-{news_item.get('summary', '조금 더 상세한 정보를 원하시면 원문을 확인해주세요.')}
+{translated_summary}
 
 ---
 ### 출처
-* **원문 제목:** {news_item['title']}
+* **원문 제목:** {raw_title}
 * **출처:** {news_item['source']}
 * [원문 기사 보기]({news_item['link']})
 """
