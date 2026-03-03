@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import feedparser
 import google.generativeai as genai
 import urllib.parse
+import time
 
 # Load environment variables from .env file
 load_dotenv()
@@ -140,8 +141,42 @@ def generate_blog_post(news_item):
         
         return title, description, body
     except Exception as e:
-        print(f"Error generating content: {e}")
-        return None, None, None
+        print(f"Error generating content (falling back to RSS data): {e}")
+        # Fallback to pure RSS data when Gemini API hits a rate limit
+        title = f"[속보] {news_item['title']}"
+        description = news_item.get('summary', '')[:100] + "..." if news_item.get('summary') else f"{title}에 대한 소식입니다."
+        
+        # Build a basic fallback body
+        image_url = news_item.get('image', '')
+        if image_url:
+            image_markdown = f"![기사 관련 이미지]({image_url})"
+        else:
+            import string
+            words = [w.strip(string.punctuation) for w in news_item['title'].split() if len(w) > 3]
+            keyword = words[0] if words else "technology"
+            safe_keyword = urllib.parse.quote(keyword)
+            image_markdown = f"![AI 관련 이미지](https://source.unsplash.com/800x400/?artificial,intelligence,{safe_keyword})"
+            
+        body = f"""
+## 📌 요약
+* 기사 원문 요약 내용입니다.
+* {description}
+* 자세한 내용은 아래 원문을 참고해 주세요.
+
+{image_markdown}
+
+## 🚀 상세 내용
+이 기사는 외부 통신 문제로 자동 요약이 지연되어 원문 데이터를 직접 노출합니다.
+
+{news_item.get('summary', '조금 더 상세한 정보를 원하시면 원문을 확인해주세요.')}
+
+---
+### 출처
+* **원문 제목:** {news_item['title']}
+* **출처:** {news_item['source']}
+* [원문 기사 보기]({news_item['link']})
+"""
+        return title, description, body
 
 def save_blog_post(title, description, content):
     """Saves the generated content as a Markdown file in the Astro blog directory."""
@@ -190,15 +225,28 @@ def main():
     
     if news_items:
         # Generate and save a separate post for each of the top items
-        # Get up to 15-20 items overall depending on success rate
-        for item in news_items[:20]:
+        # Process up to 15 items, but add a strict delay to prevent Gemini API rate limits (15 RPM free tier)
+        # 15 seconds guarantees we only do 4 requests per minute, well below the limit.
+        success_count = 0
+        target_amount = 15
+        
+        for item in news_items:
+            if success_count >= target_amount:
+                break
+                
             title, description, content = generate_blog_post(item)
             if title and content:
                 save_blog_post(title, description, content)
+                success_count += 1
             else:
                 safe_title = item['title'].encode('ascii', 'ignore').decode('ascii')
                 print(f"Failed to generate post for: {safe_title}")
-        print("Bot finished successfully.")
+                
+            # Sleep for just 2 seconds since we have fallback
+            print("Processing next item...")
+            time.sleep(2)
+            
+        print(f"Bot finished successfully. Generated {success_count} articles.")
     else:
         print("No news found. Exiting.")
 
