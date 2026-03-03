@@ -1,6 +1,6 @@
 ---
 title: "Anthropic의 Claude가 국방부 분쟁 이후 App Store에서 1위로 올라섰습니다."
-pubDate: "2026-03-03T09:49:51.563872"
+pubDate: "2026-03-03T09:57:02.236400"
 description: "Anthropic의 챗봇인 Claude는 회사의 어려운 상황에 대한 관심으로부터 이익을 얻은 것 같습니다."
 ---
 

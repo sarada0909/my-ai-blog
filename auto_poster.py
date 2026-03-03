@@ -7,6 +7,7 @@ import urllib.parse
 import time
 import google.generativeai as genai
 from deep_translator import GoogleTranslator
+from bs4 import BeautifulSoup
 
 # Initialize translator
 translator = GoogleTranslator(source='auto', target='ko')
@@ -152,7 +153,16 @@ def generate_blog_post(news_item):
         except:
             title = raw_title
             
-        raw_desc = news_item.get('summary', '')[:100] + "..." if news_item.get('summary') else f"{raw_title} news summary."
+        # Strip HTML from description to avoid frontend layout breaks (<p><a href...>)
+        raw_desc_html = news_item.get('summary', '')
+        try:
+            soup = BeautifulSoup(raw_desc_html, "html.parser")
+            raw_desc_clean = soup.get_text(separator=' ').strip()
+        except:
+            raw_desc_clean = re.sub('<[^<]+?>', ' ', raw_desc_html).strip()
+            
+        raw_desc = raw_desc_clean[:100] + "..." if raw_desc_clean else f"{raw_title} news summary."
+        
         try:
             description = translator.translate(raw_desc)
         except:
@@ -171,11 +181,22 @@ def generate_blog_post(news_item):
             # Use picsum.photos with a seed for consistent, reliable placeholder images
             image_markdown = f"![AI 관련 이미지](https://picsum.photos/seed/{safe_keyword}/800/400)"
             
-        raw_summary = news_item.get('summary', '조금 더 상세한 정보를 원하시면 원문을 확인해주세요.')
+        raw_summary_html = news_item.get('summary', '조금 더 상세한 정보를 원하시면 원문을 확인해주세요.')
         try:
-            translated_summary = translator.translate(raw_summary)
+            soup2 = BeautifulSoup(raw_summary_html, "html.parser")
+            raw_summary_clean = soup2.get_text(separator='\n').strip()
         except:
-            translated_summary = raw_summary
+            raw_summary_clean = re.sub('<[^<]+?>', ' ', raw_summary_html).strip()
+        
+        # Limit the text length to ensure it translates correctly
+        raw_summary_clean = raw_summary_clean[:4000]
+        
+        # Split summary into smaller chunks if it's too long, as deep_translator has a 5000 char limit
+        # For RSS fallback, usually the summary isn't that long, but just to be safe
+        try:
+            translated_summary = translator.translate(raw_summary_clean)
+        except:
+            translated_summary = raw_summary_clean
             
         body = f"""
 ## 📌 요약
