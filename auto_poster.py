@@ -380,9 +380,9 @@ def main():
     
     if news_items:
         # Generate and save a separate post for each of the top items
-        # Process up to 2 items to guarantee successful Gemini generation without quota limits
+        # Process up to 10 items — retry logic handles Gemini API rate limits
         success_count = 0
-        target_amount = 2
+        target_amount = 10
         
         for item in news_items:
             if success_count >= target_amount:
