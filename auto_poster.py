@@ -161,7 +161,12 @@ def generate_blog_post(news_item):
     safe_title = news_item['title'].encode('ascii', 'ignore').decode('ascii')
     print(f"Generating blog post for: {safe_title}...")
     
+    # Scrape the full article text for richer content
+    full_article = fetch_article_text(news_item['link'])
+    
     text = f"Title: {news_item['title']}\nSource: {news_item['source']}\nSummary: {news_item['summary']}\nLink: {news_item['link']}\nImage URL: {news_item.get('image', '')}"
+    if full_article:
+        text += f"\n\nFull Article Text:\n{full_article[:6000]}"
     
     # Extract YouTube links before stripping HTML
     yt_links = re.findall(r'(https?://(?:www\.)?youtube\.com/watch\?v=[\w-]+|https?://youtu\.be/[\w-]+|https?://(?:www\.)?youtube\.com/embed/[\w-]+)', text)
@@ -174,38 +179,44 @@ def generate_blog_post(news_item):
     
     prompt = f"""
     You are a professional AI news blogger with a friendly, highly readable writing style. 
-    Based on the following news article, write an engaging and informative news blog post in Korean.
+    Based on the following news article, write a DETAILED, IN-DEPTH, and engaging news blog post in Korean.
     
-    CRITICAL INSTRUCTIONS FOR MAXIMUM READABILITY & FORMATTING:
+    CRITICAL INSTRUCTIONS:
     1. Base your article ONLY on the provided news item. COMPLETELY EXCLUDE AND IGNORE any promotional content, advertisements, event ticket sales (e.g., Founder Summit, Disrupt etc.), and newsletter signups. DO NOT include them in your output.
     2. Provide a catchy, click-worthy Korean title on the VERY FIRST line. Do NOT use Markdown heading `#` for the title.
     3. On the SECOND line, write a 1-sentence description. Start this line with 'Description: '.
     4. Tone of Voice: Use polite, engaging, and professional Korean (`~입니다`, `~합니다`, `~있습니다`). Be conversational, explaining the situation as if introducing an exciting new technology.
     
-    [BODY STRUCTURE RULES]
-    5. Start the body with an Introduction Section: Introduce the topic with a `<br>` and a paragraph of text.
+    [LENGTH REQUIREMENT]
+    5. The article MUST be at least 800 words in Korean. Write DETAILED explanations, not just summaries. Include background context, industry implications, expert opinions if mentioned, and thorough analysis. DO NOT over-summarize.
     
-    6. Main Point Section: Use a Header formatted exactly like this: `💡 **[Main Point Title here]**`
-       After the header, break the details down into a bulleted list. 
-       - EXACT BULLET FORMAT: `* **[Keyword/Concept]:** [Explanation]`
-       - EVERY single bullet point MUST start with a bolded keyword followed by a colon. Do not write long paragraphs under bullets. Keep them sharp and readable.
+    [BODY STRUCTURE RULES]
+    6. Start the body with an Introduction Section: Introduce the topic with a `<br>` and write AT LEAST 2-3 paragraphs explaining the background and why this news matters.
+    
+    7. Main Point Section: Use a Header formatted exactly like this: `💡 **[Main Point Title here]**`
+       Write a detailed intro paragraph, then break the details down into a bulleted list with AT LEAST 4-5 bullet points.
+       - EXACT BULLET FORMAT: `* **[Keyword/Concept]:** [Detailed explanation, at least 2 sentences per bullet]`
+       - EVERY single bullet point MUST start with a bolded keyword followed by a colon.
        
-    7. Image Placement: Right after this first Main Point Section, you MUST insert the following placeholder verbatim on a new line:
+    8. Image Placement: Right after this first Main Point Section, you MUST insert the following placeholder verbatim on a new line:
        [IMAGE_PLACEHOLDER]
        
-    8. Secondary Section: For the next logical chunk of information, use a Header formatted exactly like this: `🌐 **[Secondary Title here]**`
-       Write a brief intro paragraph for this section, and then follow it with another bulleted list formatted identically to rule #6 (`* **[Keyword]:** [Explanation]`).
+    9. Secondary Section: For the next logical chunk of information, use a Header formatted exactly like this: `🌐 **[Secondary Title here]**`
+       Write a detailed intro paragraph for this section, and then follow it with another bulleted list with AT LEAST 3-4 bullet points formatted identically to rule #7.
+
+    10. Additional Analysis Section: Use a Header like this: `📊 **[Analysis/Impact Title here]**`
+       Provide deeper analysis of the implications — industry impact, competitor reactions, market trends, or user perspectives. Write at least 2 paragraphs.
        
-    9. Conclusion/Future Outlook Section: Use a Header like this: `🚀 **[Future Outlook/Conclusion here]**`
-       Provide a concluding thought or summary of why this matters.
+    11. Conclusion/Future Outlook Section: Use a Header like this: `🚀 **[Future Outlook/Conclusion here]**`
+       Provide a thorough concluding analysis of why this matters and what to expect going forward. At least 2 paragraphs.
        
-    10. Formatting Rules: 
+    12. Formatting Rules: 
         - Generous spacing: Always leave an empty line between headers, paragraphs, and lists.
         - Emphasize keywords: Liberally highlight important proper nouns or concepts using bold (`**text**`) inside paragraphs too.
         
-    11. YouTube Videos: If any "YouTube Links" are provided in the News Item below, you MUST embed them prominently in the post using this format: `[▶️ 관련 유튜브 영상 보기](YOUTUBE_LINK_HERE)`.
+    13. YouTube Videos: If any "YouTube Links" are provided in the News Item below, you MUST embed them prominently in the post using this format: `[▶️ 관련 유튜브 영상 보기](YOUTUBE_LINK_HERE)`.
     
-    12. At the very end of the post, you MUST include a "출처" (Source) section separated by a horizontal rule (`---`), formatted exactly like this:
+    14. At the very end of the post, you MUST include a "출처" (Source) section separated by a horizontal rule (`---`), formatted exactly like this:
        
        ---
        ### 출처
