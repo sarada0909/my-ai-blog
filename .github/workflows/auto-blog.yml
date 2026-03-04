@@ -2,13 +2,21 @@ name: Daily AI News Bot
 
 on:
   schedule:
-    # 매일 아침 8시 15분경(KST)에 실행 (UTC 기준 23:15, 정각 실행 과부하 방지)
+    # 매일 아침 8시 15분(KST) = UTC 23:15
     - cron: '15 23 * * *'
+    # 백업: 9시 15분(KST) = UTC 00:15 — 첫 번째 실행 실패 시 재시도
+    - cron: '15 0 * * *'
   workflow_dispatch: # GitHub 웹사이트에서 수동으로 버튼을 눌러 실행할 수 있게 함
+
+# 동시 실행 방지: 같은 그룹의 워크플로우가 이미 실행 중이면 대기하지 않고 취소
+concurrency:
+  group: ai-news-bot
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15 # 최대 15분 — 무한 대기 방지
 
     permissions:
       contents: write # 봇이 새 글을 작성하고 푸시할 수 있는 권한

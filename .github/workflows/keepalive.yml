@@ -1,0 +1,29 @@
+name: Keepalive - Prevent Scheduled Workflow Disable
+
+on:
+  schedule:
+    # 매주 월요일 자정(UTC)에 실행 — repo 활성 상태 유지
+    - cron: '0 0 * * 1'
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Keepalive commit
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # .keepalive 파일에 타임스탬프 기록
+          date -u > .keepalive
+          git add .keepalive
+          git commit -m "🔄 Keepalive: repo 활성 상태 유지" || echo "변경사항 없음"
+          git push || echo "Push 실패"

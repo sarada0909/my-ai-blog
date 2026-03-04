@@ -385,6 +385,27 @@ description: "{yaml_safe_description}"
     except Exception as e:
         print(f"Error saving file: {e}")
 
+def get_existing_titles():
+    """Reads existing blog posts and returns a set of their original English titles for dedup."""
+    blog_dir = os.path.join(os.path.dirname(__file__), "src", "content", "blog")
+    existing = set()
+    if not os.path.isdir(blog_dir):
+        return existing
+    for fname in os.listdir(blog_dir):
+        if not fname.endswith('.md'):
+            continue
+        fpath = os.path.join(blog_dir, fname)
+        try:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                content = f.read(2000)  # frontmatter + source section
+            # Extract original English title from 출처 section
+            m = re.search(r'원문 제목[：:]\*?\*?\s*(.+)', content)
+            if m:
+                existing.add(m.group(1).strip())
+        except:
+            pass
+    return existing
+
 def main():
     print("Starting AI News Bot...")
     news_items = fetch_rss_news()
@@ -392,12 +413,22 @@ def main():
     if news_items:
         # Generate and save a separate post for each of the top items
         # Process up to 10 items — retry logic handles Gemini API rate limits
+        # Load existing titles to avoid duplicate posts
+        existing_titles = get_existing_titles()
+        print(f"Found {len(existing_titles)} existing articles for dedup check.")
+        
         success_count = 0
         target_amount = 10
         
         for item in news_items:
             if success_count >= target_amount:
                 break
+            
+            # Skip if this article was already posted
+            if item['title'].strip() in existing_titles:
+                safe_title = item['title'].encode('ascii', 'ignore').decode('ascii')
+                print(f"Skipping duplicate: {safe_title}")
+                continue
                 
             title, description, content = generate_blog_post(item)
             if title and content:
