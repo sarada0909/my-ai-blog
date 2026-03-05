@@ -140,56 +140,55 @@ const imageUrl = extractImageUrl(entry.body);
 
 	<!-- Client-side Interactive Script -->
 	<script lang="ts">
-		document.addEventListener('DOMContentLoaded', () => {
-			// Sharing logic
-			const shareAction = async () => {
-				const shareData = {
-					title: document.title,
-					text: 'AI Insights에서 이 뉴스 기사를 확인해보세요!',
-					url: window.location.href,
-				};
-				if (navigator.share) {
-					try {
-						await navigator.share(shareData);
-					} catch (err) {
-						console.log('Error sharing:', err);
-					}
-				} else {
-					navigator.clipboard.writeText(window.location.href);
-					alert('링크가 복사되었습니다!');
-				}
+	// Astro module scripts are deferred - they run after DOM is fully parsed
+	// Sharing logic
+		const shareAction = async () => {
+			const shareData = {
+				title: document.title,
+				text: 'AI Insights에서 이 뉴스 기사를 확인해보세요!',
+				url: window.location.href,
 			};
-
-			document.getElementById('btn-share')?.addEventListener('click', shareAction);
-			document.getElementById('btn-share-bottom')?.addEventListener('click', shareAction);
-
-			// Copy link logic
-			document.getElementById('btn-copy-link')?.addEventListener('click', () => {
+			if (navigator.share) {
+				try {
+					await navigator.share(shareData);
+				} catch (err) {
+					console.log('Error sharing:', err);
+				}
+			} else {
 				navigator.clipboard.writeText(window.location.href);
 				alert('링크가 복사되었습니다!');
-			});
+			}
+		};
 
-			// Bookmark logic
-			document.getElementById('btn-bookmark')?.addEventListener('click', (e) => {
-				const icon = (e.currentTarget as HTMLElement).querySelector('.material-symbols-outlined');
-				if (icon) {
-					if (icon.textContent === 'bookmark') {
-						icon.textContent = 'bookmark_added';
-						icon.classList.add('text-primary');
-						alert('기사가 보관함에 저장되었습니다.');
-					} else {
-						icon.textContent = 'bookmark';
-						icon.classList.remove('text-primary');
-					}
+		document.getElementById('btn-share')?.addEventListener('click', shareAction);
+		document.getElementById('btn-share-bottom')?.addEventListener('click', shareAction);
+
+		// Copy link logic
+		document.getElementById('btn-copy-link')?.addEventListener('click', () => {
+			navigator.clipboard.writeText(window.location.href);
+			alert('링크가 복사되었습니다!');
+		});
+
+		// Bookmark logic
+		document.getElementById('btn-bookmark')?.addEventListener('click', (e) => {
+			const icon = (e.currentTarget as HTMLElement).querySelector('.material-symbols-outlined');
+			if (icon) {
+				if (icon.textContent === 'bookmark') {
+					icon.textContent = 'bookmark_added';
+					icon.classList.add('text-primary');
+					alert('기사가 보관함에 저장되었습니다.');
+				} else {
+					icon.textContent = 'bookmark';
+					icon.classList.remove('text-primary');
 				}
-			});
-
-			// Increment Real View Count
-			const slug = window.location.pathname.split('/').filter(Boolean).pop();
-			if (slug) {
-				fetch(`https://api.counterapi.dev/v1/my-ai-blog/${slug}/up`)
-					.catch(err => console.error('Failed to increment view count', err));
 			}
 		});
+
+		// Increment Real View Count
+		const slug = window.location.pathname.split('/').filter(Boolean).pop();
+		if (slug) {
+			fetch(`https://api.counterapi.dev/v1/my-ai-blog/${slug}/up`)
+				.catch(err => console.error('Failed to increment view count', err));
+		}
 	</script>
 </Layout>

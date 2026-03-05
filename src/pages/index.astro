@@ -146,85 +146,84 @@ function formatDate(dateStr: string) {
 
 	<!-- Client-side Search Script -->
 	<script lang="ts">
-		document.addEventListener('DOMContentLoaded', () => {
-			const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
-			const navSearchBtn = document.getElementById('nav-search-btn');
-			const navNewBtn = document.getElementById('nav-new-btn');
-			const articleCards = document.querySelectorAll('.article-card');
-			const featuredPost = document.getElementById('featured-post');
-			const recentHeader = document.getElementById('recent-header');
-			const noResults = document.getElementById('no-results');
+	// Astro module scripts are deferred - they run after DOM is fully parsed
+	const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+	const navSearchBtn = document.getElementById('nav-search-btn');
+	const navNewBtn = document.getElementById('nav-new-btn');
+	const articleCards = document.querySelectorAll('.article-card');
+	const featuredPost = document.getElementById('featured-post');
+	const recentHeader = document.getElementById('recent-header');
+	const noResults = document.getElementById('no-results');
 
-			// Nav Search Button Click -> Focus Input
-			navSearchBtn?.addEventListener('click', () => {
-				window.scrollTo({top: 0, behavior: 'smooth'});
-				setTimeout(() => searchInput?.focus(), 300);
-			});
+	// Nav Search Button Click -> Focus Input
+	navSearchBtn?.addEventListener('click', () => {
+		window.scrollTo({top: 0, behavior: 'smooth'});
+		setTimeout(() => searchInput?.focus(), 300);
+	});
 
-			// Nav New Button Click -> Clear Search & Go to Top
-			navNewBtn?.addEventListener('click', () => {
-				if (searchInput) {
-					searchInput.value = '';
-					searchInput.dispatchEvent(new Event('input'));
-				}
-				window.scrollTo({top: 0, behavior: 'smooth'});
-			});
+	// Nav New Button Click -> Clear Search & Go to Top
+	navNewBtn?.addEventListener('click', () => {
+		if (searchInput) {
+			searchInput.value = '';
+			searchInput.dispatchEvent(new Event('input'));
+		}
+		window.scrollTo({top: 0, behavior: 'smooth'});
+	});
 
-			// Real-time Search Filtering
-			searchInput?.addEventListener('input', (e) => {
-				const target = e.target as HTMLInputElement;
-				const term = target.value.toLowerCase();
-				let visibleCount = 0;
+	// Real-time Search Filtering
+	searchInput?.addEventListener('input', (e) => {
+		const target = e.target as HTMLInputElement;
+		const term = target.value.toLowerCase();
+		let visibleCount = 0;
 
-				// Hide featured hero if searching
-				if (term.length > 0) {
-					if (featuredPost) featuredPost.style.display = 'none';
-					if (recentHeader) recentHeader.style.display = 'none';
-				} else {
-					if (featuredPost) featuredPost.style.display = 'block';
-					if (recentHeader) recentHeader.style.display = 'block';
-				}
+		// Hide featured hero if searching
+		if (term.length > 0) {
+			if (featuredPost) featuredPost.style.display = 'none';
+			if (recentHeader) recentHeader.style.display = 'none';
+		} else {
+			if (featuredPost) featuredPost.style.display = 'block';
+			if (recentHeader) recentHeader.style.display = 'block';
+		}
 
-				// Filter list
-				articleCards.forEach((card) => {
-					const titleEl = card.querySelector('.article-title');
-					const text = titleEl?.textContent?.toLowerCase() || '';
-					
-					if (text.includes(term)) {
-						(card as HTMLElement).style.display = 'flex';
-						visibleCount++;
-					} else {
-						(card as HTMLElement).style.display = 'none';
-					}
-				});
-
-				// Show 'No results' message
-				if (visibleCount === 0 && term.length > 0) {
-					if (noResults) noResults.style.display = 'block';
-				} else {
-					if (noResults) noResults.style.display = 'none';
-				}
-			});
-
-			// Fetch Real View Counts
-			const viewElements = document.querySelectorAll('.view-count');
-			viewElements.forEach((el) => {
-				const slug = el.getAttribute('data-slug');
-				if (slug) {
-					fetch(`https://api.counterapi.dev/v1/my-ai-blog/${slug}`)
-						.then(res => res.json())
-						.then(data => {
-							if (data && typeof data.count === 'number') {
-								el.textContent = data.count.toString();
-							} else {
-								el.textContent = '0';
-							}
-						})
-						.catch(() => {
-							el.textContent = '0';
-						});
-				}
-			});
+		// Filter list
+		articleCards.forEach((card) => {
+			const titleEl = card.querySelector('.article-title');
+			const text = titleEl?.textContent?.toLowerCase() || '';
+			
+			if (text.includes(term)) {
+				(card as HTMLElement).style.display = 'flex';
+				visibleCount++;
+			} else {
+				(card as HTMLElement).style.display = 'none';
+			}
 		});
+
+		// Show 'No results' message
+		if (visibleCount === 0 && term.length > 0) {
+			if (noResults) noResults.style.display = 'block';
+		} else {
+			if (noResults) noResults.style.display = 'none';
+		}
+	});
+
+	// Fetch Real View Counts
+	const viewElements = document.querySelectorAll('.view-count');
+	viewElements.forEach((el) => {
+		const slug = el.getAttribute('data-slug');
+		if (slug) {
+			fetch(`https://api.counterapi.dev/v1/my-ai-blog/${slug}`)
+				.then(res => res.json())
+				.then(data => {
+					if (data && typeof data.count === 'number') {
+						el.textContent = data.count.toString();
+					} else {
+						el.textContent = '0';
+					}
+				})
+				.catch(() => {
+					el.textContent = '0';
+				});
+		}
+	});
 	</script>
 </Layout>
