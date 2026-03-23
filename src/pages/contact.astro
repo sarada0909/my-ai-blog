@@ -2,16 +2,16 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="이용약관 | AI 뉴스 봇">
+<Layout title="연락처 | AI Insights" description="AI Insights 블로그에 대한 문의사항이 있으시면 연락주세요.">
 	<div class="flex flex-col min-h-screen">
-		<!-- Simple Header -->
+		<!-- Header -->
 		<header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
 			<div class="flex items-center justify-between px-4 h-14 max-w-2xl mx-auto w-full">
 				<div class="flex items-center gap-3">
 					<a href="/" class="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-slate-700 dark:text-slate-300">
 						<span class="material-symbols-outlined text-xl">arrow_back</span>
 					</a>
-					<h1 class="text-lg font-bold text-slate-900 dark:text-white truncate">이용약관</h1>
+					<h1 class="text-lg font-bold text-slate-900 dark:text-white truncate">연락처</h1>
 				</div>
 			</div>
 		</header>
@@ -19,31 +19,36 @@ import Layout from '../layouts/Layout.astro';
 		<!-- Content -->
 		<main class="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
             <article class="prose prose-slate dark:prose-invert max-w-none">
-                <h1>이용약관</h1>
-                <p><strong>시행일: 2026년 3월 2일</strong></p>
+                <h1>연락처</h1>
+                
+                <h2>문의 안내</h2>
+                <p>AI Insights 블로그에 대한 문의사항, 제안, 오류 신고 등은 아래 이메일로 연락해 주세요.</p>
+                
+                <div class="not-prose bg-slate-100 dark:bg-slate-800 rounded-xl p-6 my-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="material-symbols-outlined text-primary text-2xl">mail</span>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">이메일</p>
+                            <a href="mailto:contact@my-ai-blog.com" class="text-primary hover:underline text-sm">contact@my-ai-blog.com</a>
+                        </div>
+                    </div>
+                </div>
 
-                <h2>1. 목적</h2>
-                <p>본 약관은 "AI 뉴스 봇"(이하 "게시자")이 제공하는 제반 서비스의 이용과 관련하여 게시자와 이용자의 권리, 의무 및 책임 사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
-
-                <h2>2. 저작권 및 콘텐츠 무단 도용 금지</h2>
-                <p>게시자가 작성한 게시물에 대한 저작권 및 기타 지적재산권은 본 블로그에 귀속됩니다.</p>
+                <h2>연락 가능한 사항</h2>
                 <ul>
-                    <li>이용자는 본 블로그를 이용함으로써 얻은 정보를 게시자의 사전 승낙 없이 복제, 송신, 출판, 배포, 방송 기타 방법에 의하여 영리 목적으로 이용하거나 제3자에게 이용하게 하여서는 안됩니다.</li>
+                    <li><strong>콘텐츠 관련</strong> — 기사 내용 오류, 수정 요청, 추가 정보 제공</li>
+                    <li><strong>제휴 문의</strong> — 콘텐츠 협업, 광고 문의</li>
+                    <li><strong>기술 문의</strong> — 사이트 버그 신고, 기능 제안</li>
+                    <li><strong>저작권</strong> — 저작권 관련 문의 및 DMCA 요청</li>
                 </ul>
 
-                <h2>3. 면책조항</h2>
-                <p>본 블로그에서 제공되는 정보는 단순 참고용으로, 정보의 정확성이나 신뢰성에 대해 보장하지 않으며 이로 인해 발생하는 어떠한 손해에 대해서도 책임을 지지 않습니다.</p>
-                <ul>
-                    <li>AI를 통해 번역되거나 요약된 내용은 원문과 차이가 있을 수 있습니다. 모든 내용의 최종 판단 및 행동의 책임은 이용자 본인에게 있습니다.</li>
-                </ul>
-
-                <h2>4. 링크 외부 사이트에 대한 책임</h2>
-                <p>본 블로그에는 제3자가 운영하는 다른 웹사이트로의 링크가 포함될 수 있습니다. 해당 외부 사이트의 콘텐츠, 개인정보 보호 정책 등에 대해 게시자는 통제 권한이 없으며 어떠한 책임도 지지 않습니다.</p>
+                <h2>응답 안내</h2>
+                <p>모든 문의에 대해 영업일 기준 2-3일 이내 답변 드리겠습니다. 감사합니다.</p>
             </article>
 		</main>
 
         <!-- Footer -->
-        <footer class="max-w-2xl mx-auto w-full px-4 py-6 text-center border-t border-slate-200 dark:border-slate-800 border-dashed">
+        <footer class="max-w-2xl mx-auto w-full px-4 py-6 mb-16 text-center border-t border-slate-200 dark:border-slate-800 border-dashed">
             <div class="flex flex-wrap justify-center gap-4 text-xs font-semibold text-slate-400 dark:text-slate-500">
                 <a href="/about" class="hover:text-primary transition-colors underline underline-offset-4">소개</a>
                 <span>|</span>
@@ -56,7 +61,7 @@ import Layout from '../layouts/Layout.astro';
             <p class="text-[10px] text-slate-300 dark:text-slate-600 mt-4">© {new Date().getFullYear()} AI Insights. All rights reserved.</p>
         </footer>
 
-        <!-- Bottom Navigation -->
+		<!-- Bottom Navigation -->
 		<nav class="sticky bottom-0 z-50 flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-4 pb-4 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
 			<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-transform cursor-pointer hover:scale-105" href="/">
 				<span class="material-symbols-outlined hover:fill-[1]">home</span>

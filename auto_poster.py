@@ -2,6 +2,7 @@ import os
 import re
 import datetime
 import string
+import random
 from dotenv import load_dotenv
 import feedparser
 import urllib.parse
@@ -120,11 +121,15 @@ def fetch_rss_news():
     """Fetches recent AI news from RSS feeds."""
     print("Fetching news from RSS feeds...")
     
-    # List of good AI / Tech news RSS feeds
+    # Diverse AI / Tech news RSS feeds
     rss_urls = [
         "https://techcrunch.com/category/artificial-intelligence/feed/",
-        "https://www.theverge.com/rss/artificial-intelligence/index.xml", # The Verge AI
-        "https://venturebeat.com/category/ai/feed/" # VentureBeat AI
+        "https://www.theverge.com/rss/artificial-intelligence/index.xml",      # The Verge AI
+        "https://venturebeat.com/category/ai/feed/",                           # VentureBeat AI
+        "https://www.wired.com/feed/category/artificial-intelligence/latest/rss",  # Wired AI
+        "https://www.technologyreview.com/feed/",                              # MIT Technology Review
+        "https://arstechnica.com/tag/artificial-intelligence/feed/",           # Ars Technica AI
+        "https://www.artificialintelligence-news.com/feed/",                   # AI News
     ]
     
     all_news_items = []
@@ -177,52 +182,61 @@ def generate_blog_post(news_item):
     text = re.sub('<[^<]+?>', ' ', text) 
     text += yt_text
     
+    # Randomize article structure to avoid template-like AI feel
+    structures = ["분석형", "이야기형", "비교형", "현장형"]
+    style = random.choice(structures)
+    
+    intro_styles = [
+        "충격적인 통계나 팩트로 시작하세요.",
+        "독자에게 질문을 던지며 시작하세요.",
+        "관련된 최근 사건이나 트렌드를 언급하며 시작하세요.",
+        "핵심 인물의 발언을 인용하며 시작하세요.",
+        "이 뉴스가 일반 사용자에게 미치는 영향으로 시작하세요.",
+    ]
+    intro_guide = random.choice(intro_styles)
+    
     prompt = f"""
-    You are a professional AI news blogger with a friendly, highly readable writing style. 
-    Based on the following news article, write a DETAILED, IN-DEPTH, and engaging news blog post in Korean.
+    당신은 AI/기술 분야를 깊이 이해하고 있는 전문 블로거입니다.
+    아래 뉴스 기사를 바탕으로 한국어로 블로그 글을 작성하세요.
     
-    CRITICAL INSTRUCTIONS:
-    1. Base your article ONLY on the provided news item. COMPLETELY EXCLUDE AND IGNORE any promotional content, advertisements, event ticket sales (e.g., Founder Summit, Disrupt etc.), and newsletter signups. DO NOT include them in your output.
-    2. Provide a catchy, click-worthy Korean title on the VERY FIRST line. Do NOT use Markdown heading `#` for the title.
-    3. On the SECOND line, write a 1-sentence description. Start this line with 'Description: '.
-    4. Tone of Voice: Use polite, engaging, and professional Korean (`~입니다`, `~합니다`, `~있습니다`). Be conversational, explaining the situation as if introducing an exciting new technology.
+    [핵심 원칙]
+    1. 제공된 뉴스만 기반으로 작성하세요. 광고, 이벤트 홍보, 뉴스레터 관련 내용은 완전히 제외하세요.
+    2. 첫 줄에 클릭을 유도하는 한국어 제목을 쓰세요. 마크다운 헤딩(#) 사용 금지.
+    3. 두 번째 줄에 'Description: '로 시작하는 1문장 요약을 쓰세요.
     
-    [LENGTH REQUIREMENT]
-    5. The article MUST be at least 800 words in Korean. Write DETAILED explanations, not just summaries. Include background context, industry implications, expert opinions if mentioned, and thorough analysis. DO NOT over-summarize.
+    [글쓰기 스타일 — 이것이 가장 중요합니다]
+    - 이번 글의 스타일: **{style}**
+    - 도입부: {intro_guide}
+    - "안녕하세요" 같은 인사말로 시작하지 마세요.
+    - ~입니다/~합니다 체를 기본으로 하되, 때때로 의문문("~일까요?"), 감탄문("~놀랍습니다"), 
+      구어체("솔직히 말해서", "사실 이건")를 자연스럽게 섞으세요.
+    - 매 문단마다 볼드체를 남발하지 마세요. 정말 핵심 키워드만 강조하세요.
+    - 이모지를 소제목에 매번 넣지 마세요. 필요한 곳에만 자연스럽게 사용하세요.
     
-    [BODY STRUCTURE RULES]
-    6. Start the body with an Introduction Section: Introduce the topic with a `<br>` and write AT LEAST 2-3 paragraphs explaining the background and why this news matters.
+    [글 구조]
+    - 자유로운 구조로 작성하세요. 매번 같은 패턴을 반복하지 마세요.
+    - 소제목은 2-3개 정도 사용하되 ## 마크다운 형식으로 쓰세요.
+    - 불릿 리스트와 일반 문단을 적절히 섞으세요. 불릿만 나열하지 마세요.
+    - 문단 사이에 빈 줄을 넣어 가독성을 확보하세요.
     
-    7. Main Point Section: Use a Header formatted exactly like this: `💡 **[Main Point Title here]**`
-       Write a detailed intro paragraph, then break the details down into a bulleted list with AT LEAST 4-5 bullet points.
-       - EXACT BULLET FORMAT: `* **[Keyword/Concept]:** [Detailed explanation, at least 2 sentences per bullet]`
-       - EVERY single bullet point MUST start with a bolded keyword followed by a colon.
-       
-    8. Image Placement: Right after this first Main Point Section, you MUST insert the following placeholder verbatim on a new line:
-       [IMAGE_PLACEHOLDER]
-       
-    9. Secondary Section: For the next logical chunk of information, use a Header formatted exactly like this: `🌐 **[Secondary Title here]**`
-       Write a detailed intro paragraph for this section, and then follow it with another bulleted list with AT LEAST 3-4 bullet points formatted identically to rule #7.
-
-    10. Additional Analysis Section: Use a Header like this: `📊 **[Analysis/Impact Title here]**`
-       Provide deeper analysis of the implications — industry impact, competitor reactions, market trends, or user perspectives. Write at least 2 paragraphs.
-       
-    11. Conclusion/Future Outlook Section: Use a Header like this: `🚀 **[Future Outlook/Conclusion here]**`
-       Provide a thorough concluding analysis of why this matters and what to expect going forward. At least 2 paragraphs.
-       
-    12. Formatting Rules: 
-        - Generous spacing: Always leave an empty line between headers, paragraphs, and lists.
-        - Emphasize keywords: Liberally highlight important proper nouns or concepts using bold (`**text**`) inside paragraphs too.
-        
-    13. YouTube Videos: If any "YouTube Links" are provided in the News Item below, you MUST embed them prominently in the post using this format: `[▶️ 관련 유튜브 영상 보기](YOUTUBE_LINK_HERE)`.
+    [필수 포함 요소]
+    - 최소 800단어 이상으로 상세하게 작성하세요.
+    - 배경 맥락을 충분히 설명하세요 (이 뉴스가 왜 중요한지).
+    - **필자의 분석이나 관점**을 반드시 1-2곳에 포함하세요. 
+      예: "이 부분에서 주목할 점은...", "개인적으로는 ~라고 생각한다", 
+      "업계 흐름을 보면 ~할 가능성이 높다"
+    - 이미지 위치: 본문 중간쯤에 다음 플레이스홀더를 삽입하세요:
+      [IMAGE_PLACEHOLDER]
     
-    14. At the very end of the post, you MUST include a "출처" (Source) section separated by a horizontal rule (`---`), formatted exactly like this:
-       
-       ---
-       ### 출처
-       * **원문 제목:** [English Title]
-       * **출처:** [Source Name]
-       * [원문 기사 보러가기](the_link_here)
+    [유튜브]
+    - 뉴스 아이템에 YouTube 링크가 있으면 `[▶️ 관련 영상 보기](URL)` 형태로 삽입하세요.
+    
+    [출처 — 반드시 글 마지막에 포함]
+    ---
+    ### 출처
+    * **원문 제목:** [English Title]
+    * **출처:** [Source Name]
+    * [원문 기사 보러가기](the_link_here)
     
     News Item:
     {text}
@@ -385,26 +399,31 @@ description: "{yaml_safe_description}"
     except Exception as e:
         print(f"Error saving file: {e}")
 
-def get_existing_titles():
-    """Reads existing blog posts and returns a set of their original English titles for dedup."""
+def get_existing_posts():
+    """Reads existing blog posts and returns sets of titles and URLs for dedup."""
     blog_dir = os.path.join(os.path.dirname(__file__), "src", "content", "blog")
-    existing = set()
+    existing_titles = set()
+    existing_urls = set()
     if not os.path.isdir(blog_dir):
-        return existing
+        return existing_titles, existing_urls
     for fname in os.listdir(blog_dir):
         if not fname.endswith('.md'):
             continue
         fpath = os.path.join(blog_dir, fname)
         try:
             with open(fpath, 'r', encoding='utf-8') as f:
-                content = f.read(2000)  # frontmatter + source section
+                content = f.read()  # Read ENTIRE file (bug fix: was 2000 bytes)
             # Extract original English title from 출처 section
             m = re.search(r'원문 제목[：:]\*?\*?\s*(.+)', content)
             if m:
-                existing.add(m.group(1).strip())
+                existing_titles.add(m.group(1).strip())
+            # Extract source URL for double-check
+            u = re.search(r'원문 기사 보러가기\]\((https?://[^\)]+)\)', content)
+            if u:
+                existing_urls.add(u.group(1).strip())
         except:
             pass
-    return existing
+    return existing_titles, existing_urls
 
 def main():
     print("Starting AI News Bot...")
@@ -412,10 +431,9 @@ def main():
     
     if news_items:
         # Generate and save a separate post for each of the top items
-        # Process up to 10 items — retry logic handles Gemini API rate limits
-        # Load existing titles to avoid duplicate posts
-        existing_titles = get_existing_titles()
-        print(f"Found {len(existing_titles)} existing articles for dedup check.")
+        # Load existing titles AND URLs for robust dedup
+        existing_titles, existing_urls = get_existing_posts()
+        print(f"Found {len(existing_titles)} existing titles, {len(existing_urls)} existing URLs for dedup check.")
         
         success_count = 0
         target_amount = 10
@@ -424,18 +442,30 @@ def main():
             if success_count >= target_amount:
                 break
             
-            # Skip if this article was already posted
-            if item['title'].strip() in existing_titles:
-                safe_title = item['title'].encode('ascii', 'ignore').decode('ascii')
-                print(f"Skipping duplicate: {safe_title}")
+            # Skip if this article was already posted (title OR URL match)
+            item_title = item['title'].strip()
+            item_url = item.get('link', '').strip()
+            
+            if item_title in existing_titles:
+                safe_title = item_title.encode('ascii', 'ignore').decode('ascii')
+                print(f"Skipping duplicate (title match): {safe_title}")
+                continue
+            
+            if item_url and item_url in existing_urls:
+                safe_title = item_title.encode('ascii', 'ignore').decode('ascii')
+                print(f"Skipping duplicate (URL match): {safe_title}")
                 continue
                 
             title, description, content = generate_blog_post(item)
             if title and content:
                 save_blog_post(title, description, content)
+                # Add to dedup sets so same-run doesn't duplicate
+                existing_titles.add(item_title)
+                if item_url:
+                    existing_urls.add(item_url)
                 success_count += 1
             else:
-                safe_title = item['title'].encode('ascii', 'ignore').decode('ascii')
+                safe_title = item_title.encode('ascii', 'ignore').decode('ascii')
                 print(f"Failed to generate post for: {safe_title}")
                 
             # Sleep for 5 seconds to pace API requests
