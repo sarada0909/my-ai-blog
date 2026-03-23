@@ -71,16 +71,18 @@ def get_article_image(news_item):
     2. OG image from original article page
     3. AI-generated image via Pollinations.ai
     """
+    alt_text = news_item.get('title', 'AI 트렌드 뉴스 이미지').replace('"', "'")
+    
     # Tier 1: RSS media image
     image_url = news_item.get('image', '')
     if image_url:
         print(f"  -> Using RSS media image")
-        return f"![기사 관련 이미지]({image_url})"
+        return f"![{alt_text}]({image_url})"
     
     # Tier 2: OG image from original article
     og_image = fetch_og_image(news_item.get('link', ''))
     if og_image:
-        return f"![기사 관련 이미지]({og_image})"
+        return f"![{alt_text}]({og_image})"
     
     # Tier 3: AI-generated image via Pollinations.ai
     print(f"  -> Generating AI image via Pollinations.ai")
@@ -97,7 +99,7 @@ def get_article_image(news_item):
     encoded_prompt = urllib.parse.quote(f"A professional, modern tech illustration about: {prompt_text}. Clean digital art style, vibrant colors, no text.")
     ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=400&nologo=true"
     
-    return f"![AI 생성 이미지]({ai_image_url})"
+    return f"![{alt_text}]({ai_image_url})"
 
 # Initialize translator
 translator = GoogleTranslator(source='auto', target='ko')
